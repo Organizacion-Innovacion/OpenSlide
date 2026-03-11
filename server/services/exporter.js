@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer-core'
+import puppeteerCore from 'puppeteer-core'
 import pptxgen from 'pptxgenjs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -8,30 +8,76 @@ import { getProject } from './projectManager.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Resolver el path real de Chrome siguiendo symlinks
-function getChromePath() {
-  if (process.env.CHROME_PATH) return process.env.CHROME_PATH
+/**
+ * Detecta Chrome/Chromium en el sistema, resolviendo symlinks.
+ * Retorna el path real del ejecutable o null si no lo encuentra.
+ */
+function getSystemChromePath() {
+  if (process.env.CHROME_PATH && fs.existsSync(process.env.CHROME_PATH)) {
+    return process.env.CHROME_PATH
+  }
 
-  // Intentar resolver el symlink /usr/bin/google-chrome al ejecutable real
-  try {
-    const real = execFileSync('readlink', ['-f', '/usr/bin/google-chrome'], { encoding: 'utf-8' }).trim()
-    if (real && fs.existsSync(real)) return real
-  } catch {}
+  // Resolver symlinks (ej. /usr/bin/google-chrome → /opt/google/chrome/google-chrome)
+  const symlinks = ['/usr/bin/google-chrome', '/usr/bin/chromium-browser', '/usr/bin/chromium']
+  for (const link of symlinks) {
+    try {
+      const real = execFileSync('readlink', ['-f', link], { encoding: 'utf-8' }).trim()
+      if (real && fs.existsSync(real)) return real
+    } catch {}
+  }
 
-  // Fallback a paths directos conocidos (en orden de preferencia)
+  // Paths directos conocidos
   const candidates = [
     '/opt/google/chrome/google-chrome',
     '/opt/google/chrome-stable/google-chrome',
     '/usr/bin/google-chrome-stable',
     '/usr/bin/chromium-browser',
     '/usr/bin/chromium',
-    '/usr/bin/google-chrome',
+    '/snap/bin/chromium',
+    'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+    'C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe',
+    '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',
   ]
   for (const c of candidates) {
     if (fs.existsSync(c)) return c
   }
 
-  return '/usr/bin/google-chrome'
+  return null
+}
+
+/**
+ * Lanza puppeteer con la mejor opción disponible:
+ * 1. Chrome/Chromium del sistema (más rápido, sin descarga)
+ * 2. Chromium bundled de puppeteer (siempre disponible)
+ */
+async function launchBrowser() {
+  const systemChrome = getSystemChromePath()
+
+  if (systemChrome) {
+    console.log(`[Exporter] Usando Chrome del sistema: ${systemChrome}`)
+    return puppeteerCore.launch({
+      executablePath: systemChrome,
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    })
+  }
+
+  // Fallback: Chromium bundled con puppeteer
+  console.log('[Exporter] Chrome no encontrado en el sistema. Usando Chromium bundled de puppeteer...')
+  try {
+    const { default: puppeteer } = await import('puppeteer')
+    return puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    })
+  } catch (err) {
+    throw new Error(
+      'No se encontró Chrome ni Chromium. Opciones:\n' +
+      '1. Instalar Chrome: https://www.google.com/chrome\n' +
+      '2. Ejecutar: cd server && npm install puppeteer\n' +
+      `Error original: ${err.message}`
+    )
+  }
 }
 
 /**
@@ -53,12 +99,7 @@ export async function exportToPDF(slug, baseUrl = 'http://localhost:3001') {
   const project = getProject(slug)
   if (!project) throw new Error('Proyecto no encontrado')
 
-  const chromePath = getChromePath()
-  const browser = await puppeteer.launch({
-    executablePath: chromePath,
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-  })
+  const browser = await launchBrowser()
 
   try {
     const pdfBuffers = []
@@ -105,12 +146,7 @@ export async function exportToPPTX(slug, baseUrl = 'http://localhost:3001') {
   const project = getProject(slug)
   if (!project) throw new Error('Proyecto no encontrado')
 
-  const chromePath = getChromePath()
-  const browser = await puppeteer.launch({
-    executablePath: chromePath,
-    headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
-  })
+  const browser = await launchBrowser()
 
   try {
     const prs = new pptxgen()
