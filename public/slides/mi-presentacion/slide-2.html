@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 2: El Diagnóstico</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f5f5f5;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        .alert-red { color: #E53935; }
+        .bg-alert-red { background-color: #E53935; }
+        .alert-orange { color: #FF6F00; }
+        .bg-alert-orange { background-color: #FF6F00; }
+        
+        .diagnostic-card {
+            transition: all 0.3s ease;
+            border-left: 6px solid transparent;
+        }
+        .diagnostic-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .card-red { border-left-color: #E53935; background-color: #FFF5F5; }
+        .card-orange { border-left-color: #FF6F00; background-color: #FFF8E1; }
+        
+        .icon-circle {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-24 bg-guayacan-green flex items-center justify-between px-16 relative z-10">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4">
+<i class="fas fa-tree text-guayacan-green text-2xl"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-white text-2xl tracking-wide">ECOSISTEMA GUAYACÁN</h1>
+<p class="text-guayacan-gold text-sm font-semibold uppercase tracking-wider">Diagnóstico Crítico</p>
+</div>
+</div>
+<div class="text-white opacity-80 font-heading font-bold text-4xl">02</div>
+<!-- Decorative line -->
+<div class="absolute bottom-0 left-0 w-full h-1 bg-guayacan-gold"></div>
+</header>
+<!-- Main Content Area -->
+<div class="flex-1 flex px-16 py-10 gap-10">
+<!-- Left Column: Main Title & Context -->
+<div class="w-1/3 flex flex-col justify-center">
+<div class="mb-6">
+<div class="inline-block px-4 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-red-200">
+<i class="fas fa-exclamation-triangle mr-2"></i>Análisis de Riesgo
+                    </div>
+<h2 class="font-heading font-extrabold text-5xl text-gray-800 leading-tight mb-4">
+                        ¿Por qué es <span class="text-red-600 underline decoration-4 decoration-guayacan-gold">urgente</span> migrar hoy?
+                    </h2>
+<p class="text-gray-600 text-lg leading-relaxed">
+                        El servidor actual presenta múltiples puntos de falla que comprometen la operación diaria y la seguridad institucional.
+                    </p>
+</div>
+<!-- Server Stats Mini Dashboard -->
+<div class="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-auto">
+<h3 class="font-heading font-bold text-gray-700 text-sm mb-4 uppercase">Estado del Servidor</h3>
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-semibold text-gray-600">Espacio en Disco</span>
+<span class="text-sm font-bold text-red-600">71% Ocupado</span>
+</div>
+<div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+<div class="bg-red-600 h-2.5 rounded-full" style="width: 71%"></div>
+</div>
+<div class="flex items-center justify-between mb-2">
+<span class="text-sm font-semibold text-gray-600">Versión PHP</span>
+<span class="text-sm font-bold text-red-600">7.3 (EOL)</span>
+</div>
+<div class="w-full bg-gray-200 rounded-full h-2.5 mb-1">
+<div class="bg-red-600 h-2.5 rounded-full" style="width: 100%"></div>
+</div>
+<p class="text-xs text-right text-gray-400 mt-1">Soporte finalizó en 2021</p>
+</div>
+</div>
+<!-- Right Column: The 4 Critical Pain Points -->
+<div class="w-2/3 grid grid-cols-1 gap-5">
+<!-- Card 1: Vulnerabilidad -->
+<div class="diagnostic-card card-red p-5 rounded-lg shadow-sm flex items-start">
+<div class="icon-circle bg-white shadow-sm text-red-600">
+<i class="fas fa-bug text-3xl"></i>
+</div>
+<div>
+<h3 class="font-heading font-bold text-xl text-gray-800 mb-2">Vulnerabilidad Crítica</h3>
+<p class="text-gray-600 text-sm leading-relaxed">
+                            Operamos sobre <span class="font-bold text-red-700">PHP 7.3</span>, una versión obsoleta sin parches de seguridad desde 2021. El sistema está expuesto a exploits conocidos sin defensa activa.
+                        </p>
+</div>
+</div>
+<!-- Card 2: Identidad -->
+<div class="diagnostic-card card-orange p-5 rounded-lg shadow-sm flex items-start">
+<div class="icon-circle bg-white shadow-sm text-orange-600">
+<i class="fas fa-id-card-clip text-3xl"></i>
+</div>
+<div>
+<h3 class="font-heading font-bold text-xl text-gray-800 mb-2">Identidad Fragmentada</h3>
+<p class="text-gray-600 text-sm leading-relaxed">
+                            Docenas de formularios de login aislados exponen credenciales locales. Esto genera fricción en usuarios (miles de rebotes diarios) y dificulta la auditoría.
+                        </p>
+</div>
+</div>
+<!-- Card 3: Disco -->
+<div class="diagnostic-card card-red p-5 rounded-lg shadow-sm flex items-start">
+<div class="icon-circle bg-white shadow-sm text-red-600">
+<i class="fas fa-hdd text-3xl"></i>
+</div>
+<div>
+<h3 class="font-heading font-bold text-xl text-gray-800 mb-2">Bomba de Tiempo en Disco</h3>
+<p class="text-gray-600 text-sm leading-relaxed">
+                            Partición principal al <span class="font-bold">71% (8GB)</span>, saturada por más de 40 GB de archivos históricos (PDFs, Excels) conviviendo peligrosamente con el código fuente.
+                        </p>
+</div>
+</div>
+<!-- Card 4: Deuda Técnica -->
+<div class="diagnostic-card card-orange p-5 rounded-lg shadow-sm flex items-start">
+<div class="icon-circle bg-white shadow-sm text-orange-600">
+<i class="fas fa-code-branch text-3xl"></i>
+</div>
+<div>
+<h3 class="font-heading font-bold text-xl text-gray-800 mb-2">Deuda Técnica Severa</h3>
+<p class="text-gray-600 text-sm leading-relaxed">
+                            Código monolítico altamente acoplado ("Spaghetti Code") que retrasa drásticamente el lanzamiento de nuevas funcionalidades o correcciones de errores simples.
+                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="absolute bottom-6 right-16 flex items-center space-x-2 text-gray-400 text-sm">
+<i class="fas fa-exclamation-circle text-red-400"></i>
+<p>Datos auditados: Marzo 2026</p>
+</div>
+</div>
+</body>
+</html>

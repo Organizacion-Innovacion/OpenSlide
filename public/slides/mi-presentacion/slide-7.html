@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 7: Roadmap y Metodología</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Color Palette */
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        
+        /* Timeline Specifics */
+        .timeline-container {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            padding-top: 40px;
+        }
+        /* Connection Line */
+        .timeline-line {
+            position: absolute;
+            top: 28px; /* Aligned with the center of the circle icon */
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+        .timeline-progress {
+            position: absolute;
+            top: 28px;
+            left: 50px;
+            width: 100%; /* Represents completed timeline */
+            height: 4px;
+            background-color: #e2e8f0; 
+            /* Gradient replacement using solid color */
+            border-top: 2px solid #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            box-sizing: border-box;
+            background: transparent;
+            z-index: 0;
+        }
+
+        .phase-card {
+            position: relative;
+            width: 19%;
+            z-index: 10;
+            transition: transform 0.3s ease;
+        }
+        .phase-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .phase-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: white;
+            border: 4px solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px auto;
+            position: relative;
+            z-index: 20;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .phase-content {
+            background-color: white;
+            border-radius: 12px;
+            padding: 20px 15px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-top: 6px solid;
+            height: 380px; /* Fixed height for alignment */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sprint-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            color: white;
+            align-self: flex-start;
+        }
+
+        /* Phase Colors */
+        .phase-1 { color: #1B5E20; border-color: #1B5E20; }
+        .bg-phase-1 { background-color: #1B5E20; }
+        
+        .phase-2 { color: #2E7D32; border-color: #2E7D32; }
+        .bg-phase-2 { background-color: #2E7D32; }
+        
+        .phase-3 { color: #43A047; border-color: #43A047; }
+        .bg-phase-3 { background-color: #43A047; }
+        
+        .phase-4 { color: #F9A825; border-color: #F9A825; }
+        .bg-phase-4 { background-color: #F9A825; }
+        
+        .phase-5 { color: #EF6C00; border-color: #EF6C00; }
+        .bg-phase-5 { background-color: #EF6C00; }
+
+        .check-list li {
+            position: relative;
+            padding-left: 18px;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+            color: #555;
+            line-height: 1.4;
+        }
+        .check-list li::before {
+            content: '\f058';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 12px;
+        }
+        .phase-1 .check-list li::before { color: #1B5E20; }
+        .phase-2 .check-list li::before { color: #2E7D32; }
+        .phase-3 .check-list li::before { color: #43A047; }
+        .phase-4 .check-list li::before { color: #F9A825; }
+        .phase-5 .check-list li::before { color: #EF6C00; }
+
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-24 bg-white border-b border-gray-200 flex items-center justify-between px-16 relative z-10 shadow-sm">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-guayacan-gold rounded-lg flex items-center justify-center mr-4 shadow-md text-white">
+<i class="fas fa-tasks text-2xl"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-guayacan-green text-3xl tracking-wide">PLAN DE EJECUCIÓN</h1>
+<p class="text-gray-500 text-sm font-semibold uppercase tracking-wider">Roadmap Ágil: Scrum a 5 Meses</p>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<div class="text-gray-200 font-heading font-bold text-5xl leading-none">07</div>
+<div class="flex items-center space-x-2 mt-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs text-green-600 font-bold uppercase">En Curso</span>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<div class="flex-1 px-12 py-6 relative bg-gray-50">
+<!-- Background Elements -->
+<div class="absolute top-0 left-0 w-full h-64 bg-white border-b border-gray-100 z-0"></div>
+<!-- Timeline Wrapper -->
+<div class="timeline-container z-10 w-full h-full">
+<!-- Connection Line -->
+<div class="timeline-line"></div>
+<!-- Month 1 -->
+<div class="phase-card">
+<div class="phase-icon-wrapper phase-1">
+<i class="fas fa-hard-hat text-2xl"></i>
+</div>
+<div class="phase-content phase-1">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-heading font-bold text-xl text-gray-800">MES 1</h3>
+<span class="sprint-badge bg-phase-1">SPRINTS 1-2</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4 border-b border-gray-100 pb-2">Cimientos y Seguridad</p>
+<ul class="check-list flex-1">
+<li><p><strong class="text-gray-700">Microsoft Entra ID:</strong> Integración OAuth 2.0 y políticas MFA.</p></li>
+<li><p><strong class="text-gray-700">Setup Monorepo:</strong> Configuración inicial Node.js/React.</p></li>
+<li><p><strong class="text-gray-700">Proxy Estrangulador:</strong> Despliegue de Nginx.</p></li>
+<li><p><strong class="text-gray-700">Módulo de Permisos:</strong> RBAC Base.</p></li>
+</ul>
+<div class="mt-auto pt-3 border-t border-gray-100">
+<p class="text-[10px] text-gray-400 uppercase text-center font-bold">Estado: <span class="text-green-700">Iniciado</span></p>
+</div>
+</div>
+</div>
+<!-- Month 2 -->
+<div class="phase-card">
+<div class="phase-icon-wrapper phase-2">
+<i class="fas fa-trophy text-2xl"></i>
+</div>
+<div class="phase-content phase-2">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-heading font-bold text-xl text-gray-800">MES 2</h3>
+<span class="sprint-badge bg-phase-2">SPRINTS 3-4</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4 border-b border-gray-100 pb-2">Victorias Tempranas</p>
+<ul class="check-list flex-1">
+<li><p><strong class="text-gray-700">Buscador General:</strong> Top 1 tráfico migrado.</p></li>
+<li><p><strong class="text-gray-700">Valores de Matrícula:</strong> Consulta financiera.</p></li>
+<li><p><strong class="text-gray-700">Financiación (Becas):</strong> Solicitudes online.</p></li>
+<li><p><strong class="text-gray-700">Directorio Interno:</strong> Búsqueda rápida.</p></li>
+</ul>
+<div class="mt-auto pt-3 border-t border-gray-100">
+<p class="text-[10px] text-gray-400 uppercase text-center font-bold">Impacto: <span class="text-green-600">Alto Tráfico</span></p>
+</div>
+</div>
+</div>
+<!-- Month 3 -->
+<div class="phase-card">
+<div class="phase-icon-wrapper phase-3">
+<i class="fas fa-network-wired text-2xl"></i>
+</div>
+<div class="phase-content phase-3">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-heading font-bold text-xl text-gray-800">MES 3</h3>
+<span class="sprint-badge bg-phase-3">SPRINTS 5-6</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4 border-b border-gray-100 pb-2">Complejidad Media</p>
+<ul class="check-list flex-1">
+<li><p><strong class="text-gray-700">Registro Horarios:</strong> Gestión de carga.</p></li>
+<li><p><strong class="text-gray-700">Hojas de Vida:</strong> Módulo Talento Humano.</p></li>
+<li><p><strong class="text-gray-700">Admisiones:</strong> Cruce complejo Oracle/MySQL.</p></li>
+</ul>
+<div class="mt-auto pt-3 border-t border-gray-100">
+<p class="text-[10px] text-gray-400 uppercase text-center font-bold">Foco: <span class="text-green-600">Integración DB</span></p>
+</div>
+</div>
+</div>
+<!-- Month 4 -->
+<div class="phase-card">
+<div class="phase-icon-wrapper phase-4">
+<i class="fas fa-file-invoice text-2xl"></i>
+</div>
+<div class="phase-content phase-4">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-heading font-bold text-xl text-gray-800">MES 4</h3>
+<span class="sprint-badge bg-phase-4">SPRINTS 7-8</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4 border-b border-gray-100 pb-2">Archivos y Procesos</p>
+<ul class="check-list flex-1">
+<li><p><strong class="text-gray-700">Planes de Estudio:</strong> Parsing de Excels asíncrono.</p></li>
+<li><p><strong class="text-gray-700">Módulos de Idiomas:</strong> Gestión de salones y exámenes.</p></li>
+<li><p><strong class="text-gray-700">Optimización S3:</strong> Carga diferida de adjuntos.</p></li>
+</ul>
+<div class="mt-auto pt-3 border-t border-gray-100">
+<p class="text-[10px] text-gray-400 uppercase text-center font-bold">Reto: <span class="text-yellow-600">Procesamiento</span></p>
+</div>
+</div>
+</div>
+<!-- Month 5 -->
+<div class="phase-card">
+<div class="phase-icon-wrapper phase-5">
+<i class="fas fa-flag-checkered text-2xl"></i>
+</div>
+<div class="phase-content phase-5">
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-heading font-bold text-xl text-gray-800">MES 5</h3>
+<span class="sprint-badge bg-phase-5">SPRINTS 9-10</span>
+</div>
+<p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-4 border-b border-gray-100 pb-2">Gestor y Go-Live</p>
+<ul class="check-list flex-1">
+<li><p><strong class="text-gray-700">Normatividad Interna:</strong> Migración masiva a S3.</p></li>
+<li><p><strong class="text-gray-700">QA Intensivo:</strong> Pruebas de carga y estrés.</p></li>
+<li><p><strong class="text-gray-700">Go-Live MVP:</strong> Despliegue oficial y desconexión PHP parcial.</p></li>
+</ul>
+<div class="mt-auto pt-3 border-t border-gray-100">
+<p class="text-[10px] text-gray-400 uppercase text-center font-bold">Hito: <span class="text-orange-600">Producción</span></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-16 text-xs text-gray-400">
+<p>Cronograma sujeto a revisión de Sprint Reviews quincenales</p>
+<div class="flex items-center space-x-4">
+<div class="flex items-center space-x-1">
+<i class="fas fa-sync-alt text-guayacan-gold"></i>
+<span>Iterativo</span>
+</div>
+<div class="flex items-center space-x-1">
+<i class="fas fa-box-open text-guayacan-green"></i>
+<span>Entregas Continuas</span>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

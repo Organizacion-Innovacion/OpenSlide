@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 1: Título y Visión</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            display: flex;
+            position: relative;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+        .guayacan-green {
+            color: #1B5E20;
+        }
+        .bg-guayacan-green {
+            background-color: #1B5E20;
+        }
+        .guayacan-gold {
+            color: #F9A825;
+        }
+        .bg-guayacan-gold {
+            background-color: #F9A825;
+        }
+        /* Custom geometric shapes for background */
+        .shape-circle {
+            position: absolute;
+            border-radius: 50%;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Left Panel: Dark Corporate Green -->
+<div class="w-7/12 h-full bg-guayacan-green relative flex flex-col justify-center px-16 z-10 text-white">
+<!-- Decorative subtle pattern -->
+<div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none overflow-hidden">
+<i class="fas fa-network-wired absolute text-9xl -top-10 -left-10"></i>
+<i class="fas fa-shield-alt absolute text-8xl bottom-20 right-20"></i>
+<div class="shape-circle w-64 h-64 bg-white opacity-5 top-1/4 right-10"></div>
+</div>
+<!-- Header / Meta info -->
+<div class="absolute top-12 left-16 flex items-center space-x-3">
+<div class="h-1 w-12 bg-guayacan-gold"></div>
+<p class="font-heading font-bold text-sm tracking-widest text-gray-300 uppercase">Plan Estratégico IT 2026</p>
+</div>
+<!-- Main Content -->
+<div class="relative z-20 mt-8">
+<h1 class="font-heading font-extrabold text-6xl leading-tight mb-6">
+                Proyecto de<br/>
+<span class="text-white">Modernización</span><br/>
+<span class="text-white">y Seguridad</span>
+</h1>
+<div class="flex items-center mb-6">
+<div class="h-16 w-1 bg-guayacan-gold mr-6"></div>
+<h2 class="font-heading text-3xl font-light italic">
+                    Ecosistema Guayacán
+                </h2>
+</div>
+<p class="font-light text-xl text-gray-200 max-w-2xl leading-relaxed border-t border-white/20 pt-6">
+                De monolitos fragmentados a una plataforma ágil, segura y escalable.
+            </p>
+</div>
+<!-- Presenter / Date -->
+<div class="absolute bottom-12 left-16 text-sm text-gray-300 font-light">
+<p class="mb-1"><i class="far fa-calendar-alt mr-2 text-guayacan-gold"></i> Marzo 2026</p>
+<p><i class="far fa-user mr-2 text-guayacan-gold"></i> Dirección de Tecnología</p>
+</div>
+</div>
+<!-- Right Panel: White/Light with Visuals -->
+<div class="w-5/12 h-full relative bg-gray-50 flex flex-col items-center justify-center overflow-hidden">
+<!-- Background Elements -->
+<div class="absolute top-0 right-0 w-full h-full">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-gray-100 rounded-full"></div>
+<div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-gray-100 to-transparent"></div>
+</div>
+<!-- Visual Metaphor: Transformation -->
+<div class="relative z-10 w-full px-10">
+<!-- Step 1: Legacy (Bottom) -->
+<div class="flex items-center justify-center mb-8 opacity-50 transform scale-90">
+<div class="bg-gray-200 p-4 rounded-lg shadow-sm w-48 text-center border border-gray-300">
+<i class="fas fa-server text-4xl text-gray-500 mb-2"></i>
+<p class="font-heading font-bold text-gray-600 text-sm">Legacy PHP</p>
+<p class="text-xs text-gray-500">Monolito Fragmentado</p>
+</div>
+</div>
+<!-- Arrow Up -->
+<div class="flex justify-center mb-8">
+<div class="h-16 w-1 bg-gray-300 relative">
+<div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-3 h-3 bg-gray-300 rounded-full"></div>
+<div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-8 border-r-8 border-b-8 border-l-transparent border-r-transparent border-b-guayacan-gold"></div>
+</div>
+</div>
+<!-- Step 2: Modern Ecosystem (Top - Highlighted) -->
+<div class="relative">
+<!-- Glowing effect behind -->
+<div class="absolute inset-0 bg-yellow-400 opacity-10 blur-xl rounded-full transform scale-125"></div>
+<div class="bg-white p-8 rounded-2xl shadow-xl border-l-8 border-guayacan-green relative z-10 w-full">
+<div class="absolute -top-4 -right-4 bg-guayacan-gold text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg">
+<i class="fas fa-check"></i>
+</div>
+<div class="flex justify-between items-center mb-4">
+<i class="fab fa-react text-4xl text-blue-500 animate-spin-slow"></i>
+<i class="fab fa-node text-4xl text-green-600"></i>
+<i class="fab fa-microsoft text-4xl text-blue-700"></i>
+</div>
+<h3 class="font-heading font-bold text-xl text-gray-800 text-center mb-1">
+                        Plataforma Guayacán
+                    </h3>
+<p class="text-center text-sm text-gray-500 mb-4">Cloud-Ready &amp; Secure</p>
+<!-- Feature badges -->
+<div class="flex flex-wrap justify-center gap-2">
+<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">MFA / SSO</span>
+<span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full">Scalable</span>
+<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded-full">Stateless</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 4: Seguridad e Identidad (SSO)</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Color Palette */
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        .ms-blue { color: #0078D4; }
+        .bg-ms-blue { background-color: #0078D4; }
+        .ms-blue-light { background-color: #E5F3FF; }
+        
+        /* Card Styles */
+        .security-card {
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .security-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .card-icon-wrapper {
+            transition: all 0.3s ease;
+        }
+        .security-card:hover .card-icon-wrapper {
+            transform: scale(1.1);
+        }
+        
+        /* Decorative Elements */
+        .shield-bg {
+            position: absolute;
+            opacity: 0.03;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .lock-pattern {
+            background-image: radial-gradient(#0078D4 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.05;
+        }
+    </style>
+</link></head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-24 bg-guayacan-green flex items-center justify-between px-16 relative z-20 shadow-md">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4 border-2 border-guayacan-gold">
+<i class="fas fa-shield-halved text-guayacan-green text-2xl"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-white text-3xl tracking-wide">SEGURIDAD E IDENTIDAD</h1>
+<p class="text-guayacan-gold text-sm font-semibold uppercase tracking-wider">Blindando el Acceso Universitario</p>
+</div>
+</div>
+<div class="flex items-center space-x-4">
+<div class="text-right">
+<p class="text-white text-xs opacity-70">Modernización Guayacán</p>
+<p class="text-white text-xs font-bold">Arquitectura Zero Trust</p>
+</div>
+<div class="h-10 w-1 bg-white opacity-20"></div>
+<div class="text-white font-heading font-bold text-5xl opacity-90">04</div>
+</div>
+</header>
+<!-- Main Content -->
+<div class="flex-1 relative flex flex-col justify-center px-16 py-8">
+<!-- Background Decorations -->
+<div class="absolute inset-0 lock-pattern z-0"></div>
+<i class="fas fa-shield-alt shield-bg text-9xl top-20 left-10 text-gray-400 transform -rotate-12"></i>
+<i class="fas fa-fingerprint shield-bg text-[15rem] bottom-0 right-0 text-ms-blue transform rotate-12 opacity-[0.04]"></i>
+<!-- Intro Text -->
+<div class="relative z-10 mb-8 text-center max-w-4xl mx-auto">
+<p class="text-gray-600 text-lg">
+                    Abandonamos la inseguridad de los logins locales PHP para adoptar un modelo de identidad corporativa unificada, seguro y sin fricción.
+                </p>
+</div>
+<!-- Three Pillars Grid -->
+<div class="grid grid-cols-3 gap-8 relative z-10 h-full max-h-[450px]">
+<!-- Pillar 1: MFA -->
+<div class="security-card bg-white rounded-xl shadow-lg border-t-8 border-ms-blue p-8 flex flex-col items-center text-center">
+<div class="card-icon-wrapper w-24 h-24 rounded-full ms-blue-light flex items-center justify-center mb-6">
+<i class="fas fa-mobile-screen-button text-ms-blue text-4xl"></i>
+<div class="absolute -top-1 -right-1 bg-green-500 rounded-full p-1.5 border-2 border-white">
+<i class="fas fa-check text-white text-xs"></i>
+</div>
+</div>
+<h3 class="font-heading font-bold text-2xl text-gray-800 mb-2">MFA por Defecto</h3>
+<div class="w-12 h-1 bg-guayacan-gold mb-4 rounded-full"></div>
+<p class="text-gray-600 leading-relaxed mb-4">
+                        Eliminación total de credenciales locales. Integración nativa con <span class="font-bold text-ms-blue">Microsoft Entra ID</span> (OAuth 2.0).
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 w-full">
+<p class="text-xs text-gray-400 font-semibold uppercase tracking-wide">Beneficio</p>
+<p class="text-sm font-bold text-green-700">Protección del 99.9% de ataques</p>
+</div>
+</div>
+<!-- Pillar 2: SSO -->
+<div class="security-card bg-white rounded-xl shadow-lg border-t-8 border-guayacan-green p-8 flex flex-col items-center text-center transform scale-105 z-20">
+<div class="absolute top-0 right-0 bg-guayacan-gold text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase shadow-sm">Core</div>
+<div class="card-icon-wrapper w-28 h-28 rounded-full bg-green-50 flex items-center justify-center mb-6 border-4 border-white shadow-md">
+<i class="fas fa-key text-guayacan-green text-5xl"></i>
+</div>
+<h3 class="font-heading font-bold text-2xl text-gray-800 mb-2">SSO (Single Sign-On)</h3>
+<div class="w-12 h-1 bg-guayacan-gold mb-4 rounded-full"></div>
+<p class="text-gray-600 leading-relaxed mb-4">
+                        Una sola sesión activa. El usuario navega fluidamente entre Académico, Financiero y Bienestar sin re-autenticación.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 w-full">
+<p class="text-xs text-gray-400 font-semibold uppercase tracking-wide">Experiencia</p>
+<p class="text-sm font-bold text-green-700">Cero fricción / Cero rebotes</p>
+</div>
+</div>
+<!-- Pillar 3: RBAC -->
+<div class="security-card bg-white rounded-xl shadow-lg border-t-8 border-ms-blue p-8 flex flex-col items-center text-center">
+<div class="card-icon-wrapper w-24 h-24 rounded-full ms-blue-light flex items-center justify-center mb-6">
+<i class="fas fa-users-gear text-ms-blue text-4xl"></i>
+</div>
+<h3 class="font-heading font-bold text-2xl text-gray-800 mb-2">Roles RBAC</h3>
+<div class="w-12 h-1 bg-guayacan-gold mb-4 rounded-full"></div>
+<p class="text-gray-600 leading-relaxed mb-4">
+                        Perfiles base automáticos (Estudiante, Profesor) + permisos granulares (Admin, Developer) gestionados por API.
+                    </p>
+<div class="mt-auto pt-4 border-t border-gray-100 w-full">
+<p class="text-xs text-gray-400 font-semibold uppercase tracking-wide">Control</p>
+<p class="text-sm font-bold text-green-700">Acceso Mínimo Privilegiado</p>
+</div>
+</div>
+</div>
+<!-- Connection Diagram (Bottom) -->
+<div class="mt-8 flex items-center justify-center opacity-80">
+<div class="flex items-center space-x-2">
+<i class="fab fa-microsoft text-gray-400 text-xl"></i>
+<p class="text-xs font-bold text-gray-500">Microsoft Cloud</p>
+</div>
+<div class="w-16 h-px bg-gray-300 mx-4 relative">
+<div class="absolute -top-1 left-1/2 w-2 h-2 bg-green-500 rounded-full"></div>
+</div>
+<div class="flex items-center space-x-2 border border-green-200 bg-green-50 px-3 py-1 rounded-full">
+<i class="fas fa-server text-green-600 text-sm"></i>
+<p class="text-xs font-bold text-green-800">API Gateway (Node.js)</p>
+</div>
+<div class="w-16 h-px bg-gray-300 mx-4"></div>
+<div class="flex items-center space-x-2">
+<i class="fas fa-laptop-code text-gray-400 text-xl"></i>
+<p class="text-xs font-bold text-gray-500">Aplicaciones Cliente</p>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-16 text-xs text-gray-400 z-20">
+<p>Estrategia de Ciberseguridad 2026</p>
+<div class="flex items-center space-x-2">
+<i class="fas fa-lock text-guayacan-gold"></i>
+<span>Confidential</span>
+</div>
+</div>
+</div>
+</body>
+</html>
