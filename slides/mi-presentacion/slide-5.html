@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 5: Estrategia de Migración</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Color Palette */
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        .tech-blue { color: #0277BD; }
+        .bg-tech-blue { background-color: #0277BD; }
+        .legacy-gray { color: #78909C; }
+        .bg-legacy-gray { background-color: #78909C; }
+        
+        /* Diagram Styles */
+        .flow-box {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .flow-line {
+            position: absolute;
+            background-color: #CBD5E1;
+            z-index: 0;
+        }
+        .flow-arrow {
+            position: absolute;
+            width: 0; 
+            height: 0; 
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #CBD5E1;
+        }
+        .decision-diamond {
+            width: 80px;
+            height: 80px;
+            background-color: #fff;
+            border: 2px solid #F9A825;
+            transform: rotate(45deg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .diamond-content {
+            transform: rotate(-45deg);
+            text-align: center;
+            font-size: 10px;
+            font-weight: bold;
+            color: #F57F17;
+            width: 100%;
+        }
+        
+        /* List Item Style */
+        .check-item {
+            position: relative;
+            padding-left: 24px;
+        }
+        .check-item::before {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 0;
+            top: 4px;
+            color: #1B5E20;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-24 bg-white border-b border-gray-200 flex items-center justify-between px-16 relative z-10 shadow-sm">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-guayacan-green rounded-lg flex items-center justify-center mr-4 shadow-md">
+<i class="fas fa-random text-white text-2xl"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-guayacan-green text-3xl tracking-wide">ESTRATEGIA DE MIGRACIÓN</h1>
+<p class="text-gray-500 text-sm font-semibold uppercase tracking-wider">El Patrón Estrangulador: Migración sin "Big Bang"</p>
+</div>
+</div>
+<div class="text-gray-200 font-heading font-bold text-5xl">05</div>
+</header>
+<!-- Main Content -->
+<div class="flex flex-1 px-16 py-8 gap-12 bg-gray-50">
+<!-- Left Column: Strategy Points -->
+<div class="w-1/3 flex flex-col justify-center space-y-8 pr-4">
+<div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-guayacan-green">
+<h3 class="font-heading font-bold text-xl text-gray-800 mb-4 flex items-center">
+<i class="fas fa-check-circle text-guayacan-green mr-2"></i>
+                        Cero Interrupciones
+                    </h3>
+<p class="text-gray-600 text-sm leading-relaxed mb-4">
+                        No apagaremos el sistema viejo de un día para otro. Las operaciones críticas de la universidad continuarán con normalidad mientras construimos el nuevo ecosistema en paralelo.
+                    </p>
+</div>
+<div class="space-y-6">
+<div class="check-item">
+<h4 class="font-bold text-gray-800 text-md mb-1">Proxy Inteligente (Nginx)</h4>
+<p class="text-gray-600 text-sm">Implementamos un "policía de tráfico" en la entrada que decide instantáneamente a dónde enviar cada petición.</p>
+</div>
+<div class="check-item">
+<h4 class="font-bold text-gray-800 text-md mb-1">Transparencia Total</h4>
+<p class="text-gray-600 text-sm">El usuario no nota el cambio. Si una app ya se migró, ve la nueva interfaz React; si no, sigue viendo la versión PHP clásica.</p>
+</div>
+<div class="check-item">
+<h4 class="font-bold text-gray-800 text-md mb-1">Mitigación de Riesgo</h4>
+<p class="text-gray-600 text-sm">Migramos aplicación por aplicación, validando cada paso. Si algo falla, el rollback es inmediato solo en ese módulo.</p>
+</div>
+</div>
+</div>
+<!-- Right Column: Flow Diagram -->
+<div class="w-2/3 relative bg-white rounded-2xl shadow-inner border border-gray-200 p-8 flex items-center justify-center overflow-hidden">
+<!-- Background Grid -->
+<div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(#1B5E20 1px, transparent 1px); background-size: 20px 20px;"></div>
+<!-- Diagram Container -->
+<div class="relative w-full h-full flex items-center justify-center">
+<!-- User/Input -->
+<div class="absolute left-0 top-1/2 transform -translate-y-1/2 flex flex-col items-center z-20">
+<div class="w-24 h-24 bg-white rounded-full border-4 border-gray-200 flex items-center justify-center shadow-md mb-2 relative">
+<i class="fas fa-users text-gray-600 text-3xl"></i>
+<div class="absolute -right-2 top-0 bg-blue-500 rounded-full p-1.5 border-2 border-white">
+<i class="fas fa-mouse-pointer text-white text-xs"></i>
+</div>
+</div>
+<p class="text-sm font-bold text-gray-700 uppercase tracking-wide">Usuario</p>
+<p class="text-xs text-gray-400">Estudiante / Docente</p>
+</div>
+<!-- Connector 1 -->
+<div class="absolute left-24 top-1/2 w-24 h-1 bg-gray-300 transform -translate-y-1/2 z-0"></div>
+<i class="fas fa-chevron-right text-gray-300 absolute left-44 top-1/2 transform -translate-y-1/2 text-xl z-10"></i>
+<!-- Nginx Proxy (Center) -->
+<div class="absolute left-1/3 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center z-20">
+<div class="w-32 h-32 bg-guayacan-green rounded-xl flex flex-col items-center justify-center shadow-xl border-4 border-white relative">
+<div class="absolute -top-3 bg-guayacan-gold text-white text-xs font-bold px-2 py-0.5 rounded shadow">Routing</div>
+<i class="fas fa-traffic-light text-white text-4xl mb-2"></i>
+<p class="text-white font-bold text-lg">NGINX</p>
+<p class="text-green-200 text-xs">Reverse Proxy</p>
+</div>
+</div>
+<!-- Decision Paths -->
+<!-- Path Up (New) -->
+<div class="absolute left-1/3 top-1/2 w-32 h-32 border-t-2 border-r-2 border-gray-300 rounded-tr-3xl transform translate-x-10 -translate-y-full z-0"></div>
+<!-- Path Down (Old) -->
+<div class="absolute left-1/3 top-1/2 w-32 h-32 border-b-2 border-r-2 border-gray-300 rounded-br-3xl transform translate-x-10 z-0"></div>
+<!-- Decision Diamond Visuals -->
+<div class="absolute left-1/2 top-1/4 transform -translate-x-1/2 -translate-y-1/2 bg-white px-2 py-1 text-xs text-green-600 font-bold border border-green-200 rounded z-10">
+                    ¿Migrado? SÍ
+                </div>
+<div class="absolute left-1/2 bottom-1/4 transform -translate-x-1/2 translate-y-1/2 bg-white px-2 py-1 text-xs text-gray-500 font-bold border border-gray-200 rounded z-10">
+                    ¿Migrado? NO
+                </div>
+<!-- Destination: New App -->
+<div class="absolute right-10 top-16 flex flex-col items-center z-20 w-48">
+<div class="w-full bg-blue-50 rounded-xl border-l-4 border-blue-500 p-4 shadow-lg flex items-center space-x-4">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm">
+<i class="fab fa-react text-blue-500 text-2xl animate-spin-slow"></i>
+</div>
+<div>
+<p class="font-bold text-gray-800 text-sm">App Nueva</p>
+<p class="text-xs text-blue-600">Node.js + React</p>
+</div>
+</div>
+<div class="mt-2 flex space-x-1">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="text-xs text-green-600 font-bold">Activo</span>
+</div>
+</div>
+<!-- Destination: Old App -->
+<div class="absolute right-10 bottom-16 flex flex-col items-center z-20 w-48 opacity-70">
+<div class="w-full bg-gray-100 rounded-xl border-l-4 border-gray-400 p-4 shadow flex items-center space-x-4 grayscale">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-sm border border-gray-200">
+<i class="fab fa-php text-gray-500 text-2xl"></i>
+</div>
+<div>
+<p class="font-bold text-gray-700 text-sm">Legacy App</p>
+<p class="text-xs text-gray-500">PHP 7.3 Monolito</p>
+</div>
+</div>
+<div class="mt-2 flex space-x-1">
+<span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+<span class="text-xs text-yellow-600 font-bold">En retiro</span>
+</div>
+</div>
+<!-- "Strangler" Vine Effect (Visual Metaphor) -->
+<div class="absolute right-24 top-1/2 h-40 w-1 bg-green-500 opacity-20 transform -translate-y-1/2 rounded-full"></div>
+<div class="absolute right-20 top-1/3 h-20 w-1 bg-green-500 opacity-30 transform rotate-12 rounded-full"></div>
+<div class="absolute right-20 bottom-1/3 h-20 w-1 bg-green-500 opacity-30 transform -rotate-12 rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-16 text-xs text-gray-400">
+<p>Metodología de Transición Gradual</p>
+<div class="flex items-center space-x-2">
+<i class="fas fa-shield-alt text-guayacan-green"></i>
+<span>Risk Free Deployment</span>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 3: Solución Arquitectónica</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        .tech-blue { color: #0277BD; }
+        .bg-tech-blue { background-color: #0277BD; }
+        .storage-purple { color: #6A1B9A; }
+        .bg-storage-purple { background-color: #6A1B9A; }
+        
+        /* Diagram Styles */
+        .layer-box {
+            position: relative;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .layer-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .connector-line {
+            position: absolute;
+            background-color: #CBD5E1;
+            z-index: 0;
+        }
+        .connector-arrow {
+            position: absolute;
+            width: 0; 
+            height: 0; 
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+            border-left: 10px solid #CBD5E1;
+        }
+        .db-cylinder {
+            position: relative;
+            width: 60px;
+            height: 70px;
+            border-radius: 50% / 20%;
+            background-color: #e2e8f0;
+            border: 1px solid #cbd5e1;
+        }
+        .db-cylinder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            border-radius: 50%;
+            background-color: #f1f5f9;
+            border-bottom: 1px solid #cbd5e1;
+            z-index: 2;
+        }
+        .db-cylinder::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 20%;
+            border-radius: 50%;
+            background-color: #cbd5e1;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-20 bg-white border-b border-gray-200 flex items-center justify-between px-16 relative z-10 shadow-sm">
+<div class="flex items-center">
+<div class="w-10 h-10 bg-guayacan-green rounded-full flex items-center justify-center mr-4">
+<i class="fas fa-layer-group text-white text-lg"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-guayacan-green text-2xl tracking-wide">ARQUITECTURA MODERNA</h1>
+<p class="text-gray-500 text-xs font-semibold uppercase tracking-wider">Desacoplada • Stateless • Resiliente</p>
+</div>
+</div>
+<div class="text-gray-200 font-heading font-bold text-4xl">03</div>
+</header>
+<!-- Main Content Area -->
+<div class="flex flex-1 px-16 py-8 gap-12 bg-gray-50">
+<!-- Left Column: Key Points Description -->
+<div class="w-1/3 flex flex-col justify-center space-y-6">
+<!-- Point 1: Frontend -->
+<div class="bg-white p-5 rounded-lg border-l-4 border-blue-500 shadow-sm layer-box">
+<div class="flex items-center mb-2">
+<i class="fab fa-react text-blue-500 text-2xl mr-3"></i>
+<h3 class="font-heading font-bold text-lg text-gray-800">Frontend SPA (React)</h3>
+</div>
+<p class="text-gray-600 text-sm leading-relaxed">
+                        Interfaces ultrarrápidas y modulares adaptables a móviles. Reutilización del 100% de componentes visuales (Botones, Tablas).
+                    </p>
+</div>
+<!-- Point 2: Backend -->
+<div class="bg-white p-5 rounded-lg border-l-4 border-green-600 shadow-sm layer-box">
+<div class="flex items-center mb-2">
+<i class="fab fa-node-js text-green-600 text-2xl mr-3"></i>
+<h3 class="font-heading font-bold text-lg text-gray-800">Backend (Node.js)</h3>
+</div>
+<p class="text-gray-600 text-sm leading-relaxed">
+                        API central segura (REST/JSON) que orquesta consultas a bases de datos y conecta al core académico sin bloquear procesos.
+                    </p>
+</div>
+<!-- Point 3: Storage -->
+<div class="bg-white p-5 rounded-lg border-l-4 border-purple-600 shadow-sm layer-box">
+<div class="flex items-center mb-2">
+<i class="fas fa-cloud text-purple-600 text-2xl mr-3"></i>
+<h3 class="font-heading font-bold text-lg text-gray-800">Object Storage (S3)</h3>
+</div>
+<p class="text-gray-600 text-sm leading-relaxed">
+                        Migración de Gigabytes (PDFs, fotos) a almacenamiento especializado cloud-ready. Servidor web 100% "Stateless".
+                    </p>
+</div>
+</div>
+<!-- Right Column: Architecture Diagram -->
+<div class="w-2/3 relative flex items-center justify-center">
+<!-- Background decorative elements -->
+<div class="absolute inset-0 bg-white rounded-2xl shadow-inner border border-gray-200">
+<div class="absolute top-4 left-4 text-xs font-bold text-gray-400 uppercase tracking-widest">Diagrama de Solución</div>
+</div>
+<!-- Diagram Container -->
+<div class="relative w-full h-full flex items-center justify-center p-8 z-10">
+<!-- Horizontal Flow -->
+<div class="flex items-center justify-between w-full max-w-4xl space-x-4">
+<!-- Client Layer -->
+<div class="flex flex-col items-center z-20">
+<div class="w-32 h-20 bg-gray-100 rounded-lg border border-gray-300 flex items-center justify-center shadow-md mb-2">
+<i class="fas fa-laptop text-gray-600 text-3xl"></i>
+<i class="fas fa-mobile-alt text-gray-600 text-2xl ml-2"></i>
+</div>
+<p class="text-xs font-bold text-gray-500 uppercase">Usuario</p>
+</div>
+<!-- Arrow 1 -->
+<div class="flex-1 h-0.5 bg-gray-300 relative flex items-center justify-center">
+<i class="fas fa-chevron-right text-gray-300 absolute -right-1 text-sm"></i>
+<div class="bg-white px-2 text-xs text-gray-400 font-mono">HTTPS/JSON</div>
+</div>
+<!-- Frontend Layer -->
+<div class="flex flex-col items-center z-20 w-40">
+<div class="w-full bg-blue-50 rounded-xl border-2 border-blue-200 p-4 shadow-md text-center">
+<i class="fab fa-react text-blue-500 text-4xl mb-2 animate-spin-slow" style="animation-duration: 10s;"></i>
+<p class="font-heading font-bold text-blue-800 text-sm">Frontend SPA</p>
+<p class="text-xs text-blue-600 mt-1">React Views</p>
+</div>
+</div>
+<!-- Arrow 2 -->
+<div class="flex-1 h-0.5 bg-gray-300 relative flex items-center justify-center">
+<i class="fas fa-chevron-right text-gray-300 absolute -right-1 text-sm"></i>
+<div class="bg-white px-2 text-xs text-gray-400 font-mono">API Calls</div>
+</div>
+<!-- Backend Layer (Central Orchestrator) -->
+<div class="flex flex-col items-center z-20 w-48 relative">
+<!-- Connection lines to DBs -->
+<div class="absolute top-full left-1/2 h-16 w-0.5 bg-gray-300 -ml-8"></div>
+<div class="absolute top-full left-1/2 h-16 w-0.5 bg-gray-300 ml-8"></div>
+<!-- Connection line to Storage -->
+<div class="absolute bottom-full left-1/2 h-12 w-0.5 bg-purple-200 mb-2"></div>
+<div class="w-full bg-green-50 rounded-xl border-2 border-green-200 p-5 shadow-lg text-center relative bg-white">
+<div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-green-600 text-white text-xs px-2 py-0.5 rounded shadow">Core Logic</div>
+<i class="fab fa-node-js text-green-600 text-5xl mb-2"></i>
+<p class="font-heading font-bold text-green-800 text-sm">Orquestador API</p>
+<p class="text-xs text-green-600 mt-1">Node.js Express</p>
+</div>
+</div>
+<!-- Storage Cloud (Above Backend in conceptual flow but visually positioned) -->
+<div class="absolute top-10 right-20 flex flex-col items-center z-20">
+<div class="border-2 border-purple-200 border-dashed rounded-lg p-3 bg-purple-50 flex items-center space-x-3">
+<i class="fas fa-file-pdf text-red-400 text-xl"></i>
+<i class="fas fa-file-excel text-green-500 text-xl"></i>
+<i class="fas fa-image text-blue-400 text-xl"></i>
+<div class="h-8 w-0.5 bg-purple-200"></div>
+<div class="text-center">
+<i class="fas fa-cloud text-purple-500 text-2xl"></i>
+<p class="text-xs font-bold text-purple-700">S3 Storage</p>
+</div>
+</div>
+<!-- Connector to Backend -->
+<div class="absolute top-full right-1/2 h-24 w-0.5 border-l-2 border-dashed border-purple-300 transform -skew-x-12 origin-top"></div>
+</div>
+</div>
+<!-- Database Layer (Bottom) -->
+<div class="absolute bottom-12 w-full flex justify-center space-x-16">
+<!-- MySQL DB -->
+<div class="flex flex-col items-center group">
+<div class="relative w-20 h-24">
+<div class="absolute w-20 h-24 bg-gray-100 rounded-lg border border-gray-300 shadow-sm flex flex-col items-center justify-center z-10">
+<i class="fas fa-database text-gray-500 text-3xl mb-1"></i>
+<p class="text-xs font-bold text-gray-600">MySQL</p>
+<p class="text-[10px] text-gray-400">App Data</p>
+</div>
+<div class="absolute top-1 left-1 w-20 h-24 bg-gray-200 rounded-lg -z-0"></div>
+</div>
+</div>
+<!-- Oracle DB -->
+<div class="flex flex-col items-center group">
+<div class="relative w-20 h-24">
+<div class="absolute w-20 h-24 bg-red-50 rounded-lg border border-red-200 shadow-sm flex flex-col items-center justify-center z-10">
+<i class="fas fa-server text-red-500 text-3xl mb-1"></i>
+<p class="text-xs font-bold text-red-700">Oracle</p>
+<p class="text-[10px] text-red-400">Banner Core</p>
+</div>
+<div class="absolute top-1 left-1 w-20 h-24 bg-red-100 rounded-lg -z-0"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-12 bg-white border-t border-gray-200 flex items-center justify-between px-16 text-xs text-gray-400">
+<p>Arquitectura Tecnológica 2026</p>
+<div class="flex items-center space-x-4">
+<span class="flex items-center"><div class="w-2 h-2 rounded-full bg-blue-500 mr-2"></div>Frontend</span>
+<span class="flex items-center"><div class="w-2 h-2 rounded-full bg-green-500 mr-2"></div>Backend</span>
+<span class="flex items-center"><div class="w-2 h-2 rounded-full bg-purple-500 mr-2"></div>Storage</span>
+</div>
+</div>
+</div>
+</body>
+</html>

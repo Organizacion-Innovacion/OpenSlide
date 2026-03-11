@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=1280, height=720, initial-scale=1.0" name="viewport"/>
+<title>Slide 6: Alcance del MVP</title>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&amp;family=Open+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Open Sans', sans-serif;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            background-color: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .font-heading {
+            font-family: 'Montserrat', sans-serif;
+        }
+        /* Color Palette */
+        .guayacan-green { color: #1B5E20; }
+        .bg-guayacan-green { background-color: #1B5E20; }
+        .guayacan-gold { color: #F9A825; }
+        .bg-guayacan-gold { background-color: #F9A825; }
+        .bg-guayacan-gold-light { background-color: #FFF8E1; }
+        
+        /* Item Card Styles */
+        .app-item {
+            transition: all 0.2s ease;
+        }
+        .app-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border-left-color: #F9A825;
+        }
+        
+        /* Badges */
+        .badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-traffic { background-color: #FFEBEE; color: #C62828; } /* High Traffic */
+        .badge-finance { background-color: #E8F5E9; color: #2E7D32; } /* Money */
+        .badge-complex { background-color: #E3F2FD; color: #1565C0; } /* Tech complexity */
+        .badge-doc { background-color: #FFF3E0; color: #EF6C00; } /* Documents */
+        .badge-seasonal { background-color: #F3E5F5; color: #7B1FA2; } /* Time specific */
+        
+        /* Background Pattern */
+        .bg-pattern {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 40%;
+            height: 100%;
+            opacity: 0.05;
+            background-image: repeating-linear-gradient(45deg, #1B5E20 0, #1B5E20 1px, transparent 0, transparent 50%);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</link></head>
+<body>
+<div class="slide-container">
+<!-- Header -->
+<header class="w-full h-24 bg-guayacan-green flex items-center justify-between px-16 relative z-10 shadow-lg">
+<div class="flex items-center">
+<div class="w-12 h-12 bg-white rounded-lg flex items-center justify-center mr-4 border-2 border-guayacan-gold shadow-md">
+<i class="fas fa-list-ol text-guayacan-green text-2xl"></i>
+</div>
+<div>
+<h1 class="font-heading font-bold text-white text-3xl tracking-wide">ALCANCE DEL MVP</h1>
+<p class="text-guayacan-gold text-sm font-semibold uppercase tracking-wider">Priorización basada en Datos (Logs Apache)</p>
+</div>
+</div>
+<div class="flex items-center space-x-6">
+<div class="bg-green-900 bg-opacity-50 px-4 py-2 rounded-lg border border-green-700">
+<p class="text-xs text-green-300 font-semibold uppercase">Total Aplicaciones Auditadas</p>
+<p class="text-white font-bold text-xl text-right">100+</p>
+</div>
+<div class="text-white font-heading font-bold text-5xl opacity-90">06</div>
+</div>
+</header>
+<!-- Main Content -->
+<div class="flex-1 relative px-16 py-8 flex flex-col z-10">
+<!-- Background element -->
+<div class="bg-pattern"></div>
+<!-- Context Bar -->
+<div class="w-full flex items-center justify-between mb-6">
+<div class="flex items-center space-x-2 text-gray-600 bg-white px-4 py-1.5 rounded-full shadow-sm border border-gray-200">
+<i class="fas fa-filter text-guayacan-gold"></i>
+<p class="text-sm font-semibold">Criterio de Selección: <span class="text-guayacan-green font-bold">Volumen de Tráfico + Impacto Crítico</span></p>
+</div>
+<div class="flex space-x-2">
+<span class="badge badge-traffic">Alto Tráfico</span>
+<span class="badge badge-finance">Crítico</span>
+<span class="badge badge-complex">Complejo DB</span>
+</div>
+</div>
+<!-- Grid Layout for 12 Items -->
+<div class="grid grid-cols-2 gap-x-12 gap-y-4 h-full">
+<!-- Left Column (1-6) -->
+<div class="flex flex-col justify-between h-full space-y-3">
+<!-- Item 1 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-guayacan-green flex items-center relative overflow-hidden">
+<div class="absolute right-0 top-0 bg-red-100 text-red-600 px-2 py-0.5 text-[10px] font-bold rounded-bl">TOP 1</div>
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">01</div>
+<div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-4 text-blue-600">
+<i class="fas fa-search"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Buscador General</p>
+<p class="text-xs text-gray-500">Punto de entrada principal</p>
+</div>
+<span class="badge badge-traffic mr-2">Tráfico Absoluto</span>
+</div>
+<!-- Item 2 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">02</div>
+<div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mr-4 text-green-600">
+<i class="fas fa-money-bill-wave"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Valores de Matrícula</p>
+<p class="text-xs text-gray-500">Consulta de recibos de pago</p>
+</div>
+<span class="badge badge-finance mr-2">Financiero</span>
+</div>
+<!-- Item 3 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">03</div>
+<div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center mr-4 text-purple-600">
+<i class="fas fa-table"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Planes de Estudio</p>
+<p class="text-xs text-gray-500">Procesamiento masivo de Excel</p>
+</div>
+<span class="badge badge-doc mr-2">Procesamiento</span>
+</div>
+<!-- Item 4 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">04</div>
+<div class="w-10 h-10 rounded-full bg-yellow-50 flex items-center justify-center mr-4 text-yellow-600">
+<i class="fas fa-address-book"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Directorio Interno</p>
+<p class="text-xs text-gray-500">Búsqueda de personal</p>
+</div>
+<span class="badge badge-traffic mr-2">Uso Diario</span>
+</div>
+<!-- Item 5 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">05</div>
+<div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center mr-4 text-indigo-600">
+<i class="fas fa-calendar-alt"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Registro Horarios</p>
+<p class="text-xs text-gray-500">Gestión de carga académica</p>
+</div>
+<span class="badge badge-seasonal mr-2">Estacional</span>
+</div>
+<!-- Item 6 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">06</div>
+<div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mr-4 text-green-600">
+<i class="fas fa-hand-holding-dollar"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Financiación (Becas)</p>
+<p class="text-xs text-gray-500">Solicitud de apoyos</p>
+</div>
+<span class="badge badge-finance mr-2">Crítico</span>
+</div>
+</div>
+<!-- Right Column (7-12) -->
+<div class="flex flex-col justify-between h-full space-y-3">
+<!-- Item 7 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">07</div>
+<div class="w-10 h-10 rounded-full bg-pink-50 flex items-center justify-center mr-4 text-pink-600">
+<i class="fas fa-file-user"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Hojas de Vida (HV2)</p>
+<p class="text-xs text-gray-500">Gestión de Talento Humano</p>
+</div>
+<span class="badge badge-doc mr-2">RRHH</span>
+</div>
+<!-- Item 8 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">08</div>
+<div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mr-4 text-blue-600">
+<i class="fas fa-user-check"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Admisiones</p>
+<p class="text-xs text-gray-500">Módulo de Decisión</p>
+</div>
+<span class="badge badge-complex mr-2">Oracle/MySQL</span>
+</div>
+<!-- Item 9 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">09</div>
+<div class="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center mr-4 text-orange-600">
+<i class="fas fa-language"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Módulos de Idiomas</p>
+<p class="text-xs text-gray-500">Gestión de Salones y Exámenes</p>
+</div>
+<span class="badge badge-seasonal mr-2">Académico</span>
+</div>
+<!-- Item 10 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">10</div>
+<div class="w-10 h-10 rounded-full bg-teal-50 flex items-center justify-center mr-4 text-teal-600">
+<i class="fas fa-certificate"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Registro</p>
+<p class="text-xs text-gray-500">Emisión de Certificaciones</p>
+</div>
+<span class="badge badge-doc mr-2">Legal</span>
+</div>
+<!-- Item 11 -->
+<div class="app-item bg-white p-3 rounded-lg shadow-sm border-l-4 border-gray-300 flex items-center">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">11</div>
+<div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mr-4 text-gray-600">
+<i class="fas fa-gavel"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-800 text-lg leading-tight">Normatividad Interna</p>
+<p class="text-xs text-gray-500">Gestor Documental</p>
+</div>
+<span class="badge badge-doc mr-2">Archivos</span>
+</div>
+<!-- Item 12 (Placeholder/Last) -->
+<div class="app-item bg-gray-50 p-3 rounded-lg shadow-inner border-2 border-dashed border-gray-300 flex items-center opacity-70">
+<div class="w-12 text-center font-heading font-extrabold text-2xl text-gray-300 mr-4">12</div>
+<div class="w-10 h-10 rounded-full bg-white flex items-center justify-center mr-4 text-gray-400">
+<i class="fas fa-spinner fa-spin"></i>
+</div>
+<div class="flex-1">
+<p class="font-bold text-gray-600 text-lg leading-tight">Auditoría en curso</p>
+<p class="text-xs text-gray-400">Validando logs adicionales</p>
+</div>
+<span class="badge bg-gray-200 text-gray-500 mr-2">Pendiente</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-16 text-xs text-gray-400 z-10">
+<p>Roadmap de Desarrollo Fase 1</p>
+<div class="flex items-center space-x-2">
+<i class="fas fa-chart-line text-guayacan-gold"></i>
+<span>Data Driven Decision Making</span>
+</div>
+</div>
+</div>
+</body>
+</html>

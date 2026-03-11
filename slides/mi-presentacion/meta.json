@@ -1,0 +1,9 @@
+{
+  "name": "mi-presentacion",
+  "slug": "mi-presentacion",
+  "createdAt": "2026-03-10T00:00:00Z",
+  "model": null,
+  "slideCount": 7,
+  "slides": ["slide-1.html","slide-2.html","slide-3.html","slide-4.html","slide-5.html","slide-6.html","slide-7.html"],
+  "chatHistory": []
+}
