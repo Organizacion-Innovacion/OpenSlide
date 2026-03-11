@@ -44,36 +44,45 @@ function GenerationProgress({ plan, slidesStatus, statusMessage }) {
 }
 
 // ─── SlideCanvas ─────────────────────────────────────────────────────────────
-function SlideCanvas({ previewUrl, statusMessage, isGenerating }) {
-  const [view, setView] = useState('preview') // 'preview' | 'code'
+function SlideCanvas({ slides, isGenerating }) {
+  const [selectedIdx, setSelectedIdx] = useState(0)
+  const [view, setView] = useState('preview')
   const [codeContent, setCodeContent] = useState('')
   const [copied, setCopied] = useState(false)
-  const iframeRef = useRef(null)
-  const containerRef = useRef(null)
+  const previewRef = useRef(null)
   const [scale, setScale] = useState(1)
 
-  // Calcular escala al cambiar tamaño del contenedor
-  useEffect(() => {
-    if (!containerRef.current) return
-    const observer = new ResizeObserver(() => {
-      if (containerRef.current) {
-        const w = containerRef.current.getBoundingClientRect().width
-        if (w > 0) setScale(w / 1280)
-      }
-    })
-    observer.observe(containerRef.current)
-    return () => observer.disconnect()
-  }, [])
+  const selectedUrl = slides[selectedIdx] || null
 
-  // Cargar código fuente cuando se cambia a vista de código
+  // Auto-seleccionar el último slide generado
   useEffect(() => {
-    if (view === 'code' && previewUrl) {
-      fetch(previewUrl)
+    if (slides.length > 0) setSelectedIdx(slides.length - 1)
+  }, [slides.length])
+
+  // Calcular escala con ResizeObserver
+  useEffect(() => {
+    if (!previewRef.current) return
+    const el = previewRef.current
+    const calc = () => {
+      const w = el.getBoundingClientRect().width
+      if (w > 0) setScale(w / 1280)
+    }
+    calc()
+    const ro = new ResizeObserver(calc)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [selectedUrl])
+
+  // Cargar código fuente
+  useEffect(() => {
+    if (view === 'code' && selectedUrl) {
+      setCodeContent('')
+      fetch(selectedUrl)
         .then(r => r.text())
         .then(setCodeContent)
         .catch(() => setCodeContent('Error al cargar el código'))
     }
-  }, [view, previewUrl])
+  }, [view, selectedUrl])
 
   const handleCopy = () => {
     navigator.clipboard.writeText(codeContent).then(() => {
@@ -83,73 +92,92 @@ function SlideCanvas({ previewUrl, statusMessage, isGenerating }) {
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#050505', overflow: 'hidden' }}>
-      {/* Header del canvas */}
-      <div style={{ padding: '10px 20px', borderBottom: '1px solid #111', display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#050505', overflow: 'hidden', minWidth: 0 }}>
+      {/* Header */}
+      <div style={{ padding: '10px 16px', borderBottom: '1px solid #111', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
         <span style={{ color: '#333', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flex: 1 }}>
-          {previewUrl ? 'Vista previa en vivo' : 'Canvas'}
+          Canvas {slides.length > 0 ? `· ${slides.length} slide${slides.length > 1 ? 's' : ''}` : ''}
         </span>
-        {previewUrl && (
-          <div style={{ display: 'flex', gap: 4 }}>
-            <button onClick={() => setView('preview')} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: view === 'preview' ? '#1B5E20' : '#111', color: view === 'preview' ? '#4CAF50' : '#555', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-              Vista previa
+        {selectedUrl && (
+          <>
+            <button onClick={() => setView('preview')} style={{ padding: '3px 10px', borderRadius: 5, border: 'none', background: view === 'preview' ? '#1B5E20' : '#111', color: view === 'preview' ? '#4CAF50' : '#444', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              Preview
             </button>
-            <button onClick={() => setView('code')} style={{ padding: '4px 12px', borderRadius: 6, border: 'none', background: view === 'code' ? '#1a1a1a' : '#111', color: view === 'code' ? '#aaa' : '#555', cursor: 'pointer', fontSize: 12, fontWeight: 600 }}>
-              &lt;/&gt; Código
+            <button onClick={() => setView('code')} style={{ padding: '3px 10px', borderRadius: 5, border: 'none', background: view === 'code' ? '#1a1a1a' : '#111', color: view === 'code' ? '#aaa' : '#444', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
+              {'</>'} Código
             </button>
-          </div>
-        )}
-        {view === 'code' && codeContent && (
-          <button onClick={handleCopy} style={{ padding: '4px 12px', borderRadius: 6, border: '1px solid #222', background: 'none', color: copied ? '#4CAF50' : '#555', cursor: 'pointer', fontSize: 12 }}>
-            {copied ? '✓ Copiado' : 'Copiar'}
-          </button>
+            {view === 'code' && codeContent && (
+              <button onClick={handleCopy} style={{ padding: '3px 10px', borderRadius: 5, border: '1px solid #1e1e1e', background: 'none', color: copied ? '#4CAF50' : '#444', cursor: 'pointer', fontSize: 11 }}>
+                {copied ? '✓' : 'Copiar'}
+              </button>
+            )}
+          </>
         )}
       </div>
 
-      {/* Contenido del canvas */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, overflow: 'hidden' }}>
-        {!previewUrl ? (
-          <div style={{ textAlign: 'center', color: '#1a1a1a' }}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>🎨</div>
-            <p style={{ fontSize: 13, color: '#2a2a2a' }}>
-              {isGenerating ? 'Los slides aparecerán aquí mientras se generan' : 'El canvas mostrará los slides generados'}
-            </p>
-          </div>
-        ) : view === 'preview' ? (
-          <div ref={containerRef} style={{ width: '100%', maxWidth: 900 }}>
-            <div style={{
-              position: 'relative',
-              height: `${720 * scale}px`,
-              background: '#111',
-              borderRadius: 8,
-              overflow: 'hidden',
-              border: '1px solid #1a1a1a',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
-            }}>
-              <iframe
-                ref={iframeRef}
-                key={previewUrl}
-                src={previewUrl}
-                sandbox="allow-scripts allow-same-origin"
+      {/* Body: lista de slides + preview */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
+
+        {/* Lista de slides (sidebar) */}
+        {slides.length > 0 && (
+          <div style={{ width: 90, flexShrink: 0, overflowY: 'auto', borderRight: '1px solid #0e0e0e', background: '#030303', padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {slides.map((url, i) => (
+              <button
+                key={url}
+                onClick={() => { setSelectedIdx(i); setView('preview') }}
                 style={{
-                  position: 'absolute', top: 0, left: 0,
-                  width: '1280px', height: '720px',
-                  border: 'none', display: 'block',
-                  transform: `scale(${scale})`,
-                  transformOrigin: 'top left',
-                  pointerEvents: 'none',
+                  position: 'relative', width: '100%', aspectRatio: '16/9',
+                  borderRadius: 5, overflow: 'hidden', border: 'none',
+                  outline: selectedIdx === i ? '2px solid #4CAF50' : '1px solid #1a1a1a',
+                  cursor: 'pointer', background: '#111', padding: 0, flexShrink: 0,
                 }}
-              />
-            </div>
-            <p style={{ color: '#222', fontSize: 11, textAlign: 'center', marginTop: 8 }}>Último slide generado</p>
-          </div>
-        ) : (
-          <div style={{ width: '100%', maxWidth: 900, height: '100%', maxHeight: 600, overflow: 'auto', background: '#0a0a0a', borderRadius: 8, border: '1px solid #1a1a1a' }}>
-            <pre style={{ margin: 0, padding: 20, color: '#6a9955', fontSize: 12, lineHeight: 1.6, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
-              {codeContent || 'Cargando...'}
-            </pre>
+                title={`Slide ${i + 1}`}
+              >
+                <iframe
+                  src={url}
+                  sandbox="allow-scripts allow-same-origin"
+                  style={{ width: '1280px', height: '720px', border: 'none', transform: 'scale(0.0609)', transformOrigin: 'top left', pointerEvents: 'none' }}
+                />
+                <div style={{ position: 'absolute', bottom: 2, right: 4, color: selectedIdx === i ? '#4CAF50' : '#333', fontSize: 9, fontWeight: 700 }}>{i + 1}</div>
+              </button>
+            ))}
+            {isGenerating && (
+              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 5, border: '1px dashed #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div style={{ width: 10, height: 10, border: '2px solid #1a1a1a', borderTop: '2px solid #4CAF50', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              </div>
+            )}
           </div>
         )}
+
+        {/* Preview / Code principal */}
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', minWidth: 0 }}>
+          {!selectedUrl ? (
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>🎨</div>
+              <p style={{ fontSize: 12, color: '#1e1e1e' }}>
+                {isGenerating ? 'Generando slides...' : 'El canvas mostrará los slides aquí'}
+              </p>
+            </div>
+          ) : view === 'preview' ? (
+            <div ref={previewRef} style={{ width: '100%', maxWidth: '100%' }}>
+              <div style={{ position: 'relative', height: `${720 * scale}px`, background: '#111', borderRadius: 6, overflow: 'hidden', border: '1px solid #1a1a1a', boxShadow: '0 8px 40px rgba(0,0,0,0.8)' }}>
+                <iframe
+                  key={selectedUrl}
+                  src={selectedUrl}
+                  sandbox="allow-scripts allow-same-origin"
+                  style={{ position: 'absolute', top: 0, left: 0, width: '1280px', height: '720px', border: 'none', transform: `scale(${scale})`, transformOrigin: 'top left', pointerEvents: 'none' }}
+                />
+              </div>
+              <p style={{ color: '#1e1e1e', fontSize: 10, textAlign: 'center', margin: '6px 0 0' }}>Slide {selectedIdx + 1}</p>
+            </div>
+          ) : (
+            <div style={{ width: '100%', height: '100%', overflow: 'auto', background: '#0a0a0a', borderRadius: 6, border: '1px solid #1a1a1a' }}>
+              <pre style={{ margin: 0, padding: 16, color: '#6a9955', fontSize: 11, lineHeight: 1.6, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+                {codeContent || 'Cargando...'}
+              </pre>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -209,6 +237,7 @@ export default function NewProject() {
   const [slidesStatus, setSlidesStatus] = useState({})
   const [genStatus, setGenStatus] = useState('')
   const [currentPreviewUrl, setCurrentPreviewUrl] = useState(null)
+  const [generatedSlides, setGeneratedSlides] = useState([])
   const [currentSlug, setCurrentSlug] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
   const abortRef = useRef(null)
@@ -313,6 +342,7 @@ export default function NewProject() {
     setSlidesStatus({})
     setGenStatus('Iniciando...')
     setCurrentPreviewUrl(null)
+    setGeneratedSlides([])
     setPhase('generating')
 
     const keyMap = { openai: keys.openai, claude: keys.anthropic, gemini: keys.gemini }
@@ -351,8 +381,14 @@ export default function NewProject() {
       onSlide: (p) => {
         setSlidesStatus(prev => ({ ...prev, [p.slideIndex]: 'done' }))
         // Esperar 300ms para que el archivo esté listo en disco
+        const url = `/slides/${slug}/${p.filename}?t=${Date.now()}`
         setTimeout(() => {
-          setCurrentPreviewUrl(`/slides/${slug}/${p.filename}?t=${Date.now()}`)
+          setCurrentPreviewUrl(url)
+          setGeneratedSlides(prev => {
+            const next = [...prev]
+            next[p.slideIndex - 1] = url
+            return next
+          })
         }, 300)
       },
       onComplete: (p) => {
@@ -471,8 +507,7 @@ export default function NewProject() {
         {/* Canvas panel */}
         {isGenerating && (
           <SlideCanvas
-            previewUrl={currentPreviewUrl}
-            statusMessage={genStatus}
+            slides={generatedSlides.filter(Boolean)}
             isGenerating={isGenerating}
           />
         )}

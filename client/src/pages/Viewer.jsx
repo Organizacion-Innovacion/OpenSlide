@@ -198,8 +198,11 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
   const wrapperStyle = fsSize
     ? {
         position: 'relative', overflow: 'hidden', background: '#fff',
-        userSelect: 'none', width: `${fsSize.w}px`, height: `${fsSize.h}px`,
-        maxWidth: 'none', borderRadius: 0, boxShadow: 'none', cursor: 'default',
+        userSelect: 'none',
+        width: `${fsSize.w}px`, height: `${fsSize.h}px`,
+        maxWidth: '100vw', maxHeight: '100vh',
+        flexShrink: 0,
+        borderRadius: 0, boxShadow: 'none', cursor: 'default',
       }
     : {
         position: 'relative', overflow: 'hidden', background: '#fff',
@@ -207,6 +210,7 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         height: `${720 * scale}px`,
         cursor: hint === 'prev' ? 'w-resize' : hint === 'next' ? 'e-resize' : 'default',
         borderRadius: 12, boxShadow: '0 16px 60px rgba(0,0,0,0.8)',
+        flexShrink: 0,
       }
 
   const btnStyle = {
@@ -221,7 +225,11 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
       onMouseMove={handleMouseMove}
       style={{
         display: 'flex', flexDirection: 'column', alignItems: 'center',
-        justifyContent: 'center', minHeight: '100vh',
+        justifyContent: 'center',
+        width: isFullscreen ? '100vw' : undefined,
+        height: isFullscreen ? '100vh' : undefined,
+        minHeight: isFullscreen ? undefined : '100vh',
+        overflow: 'hidden',
         fontFamily: "'Inter', 'Segoe UI', sans-serif",
         padding: isFullscreen ? 0 : '20px 16px',
         background: isFullscreen ? '#000' : '#0a0a0a',
