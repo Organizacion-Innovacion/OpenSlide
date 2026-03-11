@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSettingsStore } from '../store/useSettingsStore'
-import { validateKey } from '../services/api'
+import { validateKey, saveSettings } from '../services/api'
 
 const PROVIDERS = [
   { id: 'openai', label: 'OpenAI', placeholder: 'sk-...' },
@@ -17,9 +17,16 @@ export default function Settings() {
   const [validating, setValidating] = useState({})
   const [keyStatus, setKeyStatus] = useState({})
 
-  const handleSave = (provider) => {
+  const handleSave = async (provider) => {
     if (!drafts[provider].trim()) return
-    setKey(provider, drafts[provider].trim())
+    const key = drafts[provider].trim()
+    setKey(provider, key)
+    // Sincronizar con el servidor
+    try {
+      await saveSettings({ keys: { [provider]: key } })
+    } catch (e) {
+      console.error('Error guardando key en servidor:', e)
+    }
     setSaved((s) => ({ ...s, [provider]: true }))
     setTimeout(() => setSaved((s) => ({ ...s, [provider]: false })), 2000)
     setDrafts((d) => ({ ...d, [provider]: '' }))

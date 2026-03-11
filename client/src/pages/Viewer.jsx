@@ -16,6 +16,13 @@ export default function Viewer() {
       .finally(() => setLoading(false))
   }, [slug])
 
+  const refreshProject = async () => {
+    try {
+      const updated = await getProject(slug)
+      setProject(updated)
+    } catch {}
+  }
+
   if (loading) return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
       <span style={{ color: '#555' }}>Cargando…</span>
@@ -31,10 +38,10 @@ export default function Viewer() {
     </div>
   )
 
-  return <PresentationViewer project={project} onBack={() => navigate('/')} />
+  return <PresentationViewer project={project} onBack={() => navigate('/')} onProjectRefresh={refreshProject} />
 }
 
-function PresentationViewer({ project, onBack }) {
+function PresentationViewer({ project, onBack, onProjectRefresh }) {
   const navigate = useNavigate()
   const [current, setCurrent] = useState(1)
   const [hint, setHint] = useState(null)
@@ -64,6 +71,7 @@ function PresentationViewer({ project, onBack }) {
       const result = await regenerateSlide({ slug: project.slug, slideIndex: current, instructions: regenInstructions })
       if (result.ok) {
         setReloadKey((k) => k + 1)
+        if (onProjectRefresh) await onProjectRefresh()
         setRegenModal(false)
         setRegenInstructions('')
       } else {

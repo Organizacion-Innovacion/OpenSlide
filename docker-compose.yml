@@ -7,6 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
+      - ALLOWED_ORIGINS=http://localhost,http://localhost:80
     volumes:
       - ./slides:/app/slides
       - ./config:/app/config

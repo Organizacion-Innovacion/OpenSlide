@@ -38,7 +38,10 @@ router.post('/chat', async (req, res) => {
       try {
         const project = getProject(slug)
         if (project) {
-          updateMeta(slug, { chatHistory: messages.concat({ role: 'assistant', content: message }) })
+          const newHistory = messages.concat({ role: 'assistant', content: message })
+          // Limitar a últimos 50 mensajes
+          const trimmedHistory = newHistory.slice(-50)
+          updateMeta(slug, { chatHistory: trimmedHistory })
         }
       } catch {}
     }
@@ -82,13 +85,14 @@ router.post('/generate', async (req, res) => {
       project = createProject({ slug, name: projectName, model })
     }
 
+    const count = Math.min(parseInt(slideCount) || 5, 20)
     const result = await generatePresentation({
       slug,
       model,
       apiKey,
       projectName,
       brief,
-      slideCount: parseInt(slideCount) || 5,
+      slideCount: count,
       theme: theme || 'dark-tech',
       extraInstructions
     })
@@ -113,7 +117,8 @@ router.post('/generate-stream', async (req, res) => {
     let project = getProject(slug)
     if (!project) project = createProject({ slug, name: projectName, model })
 
-    await generatePresentationStream({ slug, model, apiKey, projectName, brief, slideCount: parseInt(slideCount) || 5, theme: theme || 'dark-tech', extraInstructions }, res)
+    const count = Math.min(parseInt(slideCount) || 5, 20)
+    await generatePresentationStream({ slug, model, apiKey, projectName, brief, slideCount: count, theme: theme || 'dark-tech', extraInstructions }, res)
   } catch (err) {
     if (!res.headersSent) res.status(500).json({ error: err.message })
   }
@@ -122,20 +127,24 @@ router.post('/generate-stream', async (req, res) => {
 // Regenerar un slide específico
 router.post('/regenerate-slide', async (req, res) => {
   try {
-    const { slug, slideIndex, instructions, apiKey: clientKey } = req.body
+    const { slug, slideIndex, instructions, model: reqModel, apiKey: clientKey } = req.body
     if (!slug || !slideIndex) return res.status(400).json({ error: 'slug y slideIndex requeridos' })
 
     const project = getProject(slug)
     if (!project) return res.status(404).json({ error: 'Proyecto no encontrado' })
 
-    const apiKey = clientKey || getApiKey(project.model)
-    if (!apiKey) return res.status(400).json({ error: 'API key no configurada' })
+    // Usar modelo del request, luego del proyecto, luego buscar cualquier key disponible
+    const model = reqModel || project.model
+    const apiKey = clientKey || getApiKey(model) || getAnyApiKey()
+    const resolvedModel = model || getAnyModel()
 
-    const provider = createProvider(project.model, apiKey)
+    if (!apiKey || !resolvedModel) return res.status(400).json({ error: 'No hay modelo o API key configurados' })
+
+    const provider = createProvider(resolvedModel, apiKey)
     const html = await provider.generateSlide({
       slideNumber: slideIndex,
       totalSlides: project.slideCount,
-      content: instructions || `Regenerar slide ${slideIndex}`,
+      content: instructions || `Regenerar slide ${slideIndex} con mejoras visuales y de contenido`,
       theme: project.theme || 'dark-tech',
       projectName: project.name
     })
@@ -146,5 +155,24 @@ router.post('/regenerate-slide', async (req, res) => {
     res.status(500).json({ error: err.message })
   }
 })
+
+function getAnyApiKey() {
+  if (!fs.existsSync(CONFIG_PATH)) return null
+  try {
+    const settings = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
+    return settings.keys?.openai || settings.keys?.anthropic || settings.keys?.gemini || null
+  } catch { return null }
+}
+
+function getAnyModel() {
+  if (!fs.existsSync(CONFIG_PATH)) return null
+  try {
+    const settings = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'))
+    if (settings.keys?.openai) return 'openai'
+    if (settings.keys?.anthropic) return 'claude'
+    if (settings.keys?.gemini) return 'gemini'
+    return null
+  } catch { return null }
+}
 
 export default router

@@ -20,7 +20,10 @@ router.get('/:slug', (req, res) => {
 
 router.post('/', (req, res) => {
   try {
-    res.json(createProject(req.body))
+    const { name, model } = req.body
+    let { slug } = req.body
+    if (!slug || !name) return res.status(400).json({ error: 'slug y name son requeridos' })
+    res.json(createProject({ slug, name, model }))
   } catch (e) {
     res.status(400).json({ error: e.message })
   }

@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import rateLimit from 'express-rate-limit'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import projectsRouter from './routes/projects.js'
@@ -11,11 +12,30 @@ const app = express()
 const PORT = process.env.PORT || 3001
 const SLIDES_DIR = path.resolve(__dirname, '../slides')
 
-app.use(cors({ origin: 'http://localhost:5173' }))
+const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173,http://localhost')
+  .split(',')
+  .map(o => o.trim())
+
+app.use(cors({
+  origin: (origin, cb) => {
+    // Permitir requests sin origin (curl, Postman, mismo servidor)
+    if (!origin || ALLOWED_ORIGINS.includes(origin)) return cb(null, true)
+    cb(new Error(`CORS bloqueado para origen: ${origin}`))
+  }
+}))
+
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minuto
+  max: 20,             // máx 20 requests por minuto
+  message: { error: 'Demasiadas solicitudes. Espera un momento.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
 app.use(express.json())
 app.use('/slides', express.static(SLIDES_DIR))
 app.use('/api/projects', projectsRouter)
-app.use('/api/ai', aiRouter)
+app.use('/api/ai', aiLimiter, aiRouter)
 app.use('/api/settings', settingsRouter)
 
 app.use((err, _req, res, _next) => {

@@ -19,7 +19,7 @@ export default function Home() {
   const handleDelete = async (slug) => {
     if (!confirm(`¿Eliminar el proyecto "${slug}"? Esta acción no se puede deshacer.`)) return
     await deleteProject(slug)
-    setProjects(prev => prev.filter(p => p.slug !== slug))
+    setProjects(projects.filter(p => p.slug !== slug))
   }
 
   return (

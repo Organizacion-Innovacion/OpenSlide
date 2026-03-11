@@ -50,11 +50,13 @@ export const regenerateSlide = (data) =>
 
 export function generatePresentationStream(data, callbacks) {
   const { onStatus, onPlan, onProgress, onSlide, onComplete, onFatal } = callbacks
+  const controller = new AbortController()
 
   fetch(`${BASE}/ai/generate-stream`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
+    body: JSON.stringify(data),
+    signal: controller.signal
   }).then(res => {
     const reader = res.body.getReader()
     const decoder = new TextDecoder()
@@ -86,12 +88,19 @@ export function generatePresentationStream(data, callbacks) {
     }
 
     reader.read().then(processChunk)
-  }).catch(err => { if (onFatal) onFatal({ message: err.message }) })
+  }).catch(err => {
+    if (err.name === 'AbortError') return // Ignorar abortos intencionales
+    if (onFatal) onFatal({ message: err.message })
+  })
+
+  return () => controller.abort()
 }
 
 export const exportProject = (slug) => {
   const a = document.createElement('a')
   a.href = `${BASE}/projects/${slug}/export`
   a.download = `${slug}.zip`
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
 }

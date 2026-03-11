@@ -13,30 +13,34 @@ function GenerationProgress({ plan, slidesStatus, statusMessage }) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
 
   return (
-    <div style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12, padding: '20px 24px', minWidth: 400 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 10 }}>
-        <span style={{ color: '#aaa', fontSize: 13 }}>{statusMessage || 'Generando...'}</span>
-        <span style={{ color: '#4CAF50', fontSize: 13, fontWeight: 700 }}>{pct}%</span>
+    <div style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12, padding: '20px 24px', minWidth: 360 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: total > 0 ? 10 : 0 }}>
+        <div style={{ width: 14, height: 14, border: '2px solid #222', borderTop: '2px solid #4CAF50', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
+        <span style={{ color: '#aaa', fontSize: 13, flex: 1 }}>{statusMessage || 'Iniciando...'}</span>
+        {total > 0 && <span style={{ color: '#4CAF50', fontSize: 13, fontWeight: 700 }}>{pct}%</span>}
       </div>
-      {/* Barra de progreso */}
-      <div style={{ background: '#1a1a1a', borderRadius: 4, height: 6, marginBottom: 16 }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(to right, #1B5E20, #4CAF50)', borderRadius: 4, transition: 'width 0.4s ease' }} />
-      </div>
-      {/* Lista de slides */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {plan.map((content, i) => {
-          const status = slidesStatus[i + 1] || 'pending'
-          const icon = { pending: '⏳', generating: '🔄', done: '✅', error: '❌' }[status]
-          return (
-            <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{ fontSize: 14 }}>{icon}</span>
-              <span style={{ color: status === 'done' ? '#4CAF50' : status === 'error' ? '#f44336' : '#555', fontSize: 12, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                Slide {i + 1}: {content?.slice(0, 60)}{content?.length > 60 ? '...' : ''}
-              </span>
-            </div>
-          )
-        })}
-      </div>
+
+      {total > 0 && (
+        <>
+          <div style={{ background: '#1a1a1a', borderRadius: 4, height: 6, marginBottom: 16 }}>
+            <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(to right, #1B5E20, #4CAF50)', borderRadius: 4, transition: 'width 0.4s ease' }} />
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {plan.map((content, i) => {
+              const status = slidesStatus[i + 1] || 'pending'
+              const icon = { pending: '⏳', generating: '🔄', done: '✅', error: '❌' }[status]
+              return (
+                <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                  <span style={{ fontSize: 14 }}>{icon}</span>
+                  <span style={{ color: status === 'done' ? '#4CAF50' : status === 'error' ? '#f44336' : '#555', fontSize: 12, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    Slide {i + 1}: {content?.slice(0, 60)}{content?.length > 60 ? '...' : ''}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
     </div>
   )
 }
@@ -54,6 +58,7 @@ export default function NewProject() {
   const [generating, setGenerating] = useState(false)
   const [data, setData] = useState({ model: null, name: '', topic: '', slides: '', style: '' })
   const bottomRef = useRef(null)
+  const abortRef = useRef(null)
 
   // SSE state
   const [generationPlan, setGenerationPlan] = useState([])
@@ -65,6 +70,12 @@ export default function NewProject() {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  useEffect(() => {
+    return () => {
+      if (abortRef.current) abortRef.current()
+    }
+  }, [])
 
   const addMessage = (role, content, extra) => {
     setMessages((m) => [...m, { role, content, extra }])
@@ -188,7 +199,7 @@ export default function NewProject() {
       _isProgress: true
     }])
 
-    generatePresentationStream({
+    abortRef.current = generatePresentationStream({
       slug,
       model: finalData.model,
       projectName: finalData.name,
@@ -228,10 +239,15 @@ export default function NewProject() {
       },
       onFatal: (payload) => {
         setGenerating(false)
+        const msg = payload.message?.includes('already exists')
+          ? `❌ Ya existe un proyecto con ese nombre. Vuelve al paso anterior y usa un nombre diferente.`
+          : `❌ Error: ${payload.message}`
         setMessages(prev => {
           const filtered = prev.filter(m => !m._isProgress)
-          return [...filtered, { role: 'assistant', content: `❌ Error fatal: ${payload.message}` }]
+          return [...filtered, { role: 'assistant', content: msg }]
         })
+        // Permitir reintentar desde el paso de nombre
+        setStep(2)
       }
     })
   }
