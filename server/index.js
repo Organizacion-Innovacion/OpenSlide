@@ -8,7 +8,7 @@ import settingsRouter from './routes/settings.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 const SLIDES_DIR = path.resolve(__dirname, '../slides')
 
 app.use(cors({ origin: 'http://localhost:5173' }))

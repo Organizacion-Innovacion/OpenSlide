@@ -103,3 +103,29 @@ cd server && npm run dev      # puerto 3001
 - `config/settings.json` nunca debe commitearse (está en `.gitignore`)
 - Las API keys se ofuscan en las respuestas del servidor (solo últimos 4 chars visibles)
 - Los slides se cargan en `iframe` con `sandbox="allow-scripts allow-same-origin"`
+
+## Docker
+
+### Servicios
+
+| Servicio | Imagen | Puerto externo | Puerto interno |
+|----------|--------|----------------|----------------|
+| `client` | nginx:1.25-alpine | 80 | 80 |
+| `server` | node:20-alpine | — (interno) | 3001 |
+
+### Red interna
+
+Los contenedores se comunican por la red `openslide-net`. El cliente nginx hace proxy hacia `http://server:3001`.
+
+### Volúmenes
+
+- `./slides` → `/app/slides` en server: persiste los proyectos generados
+- `./config` → `/app/config` en server: persiste la configuración y API keys
+
+### SSE en nginx
+
+El endpoint `/api/ai/generate-stream` tiene configuración especial en nginx para deshabilitar el buffering y permitir el streaming en tiempo real:
+- `proxy_buffering off`
+- `proxy_cache off`
+- `Connection: ''` (HTTP/1.1 keepalive)
+- `chunked_transfer_encoding on`
