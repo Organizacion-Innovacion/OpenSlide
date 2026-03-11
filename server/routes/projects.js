@@ -1,5 +1,12 @@
 import { Router } from 'express'
 import { getProjects, getProject, createProject, deleteProject } from '../services/projectManager.js'
+import archiver from 'archiver'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import fs from 'fs'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const SLIDES_DIR = path.resolve(__dirname, '../../slides')
 
 const router = Router()
 
@@ -26,6 +33,22 @@ router.delete('/:slug', (req, res) => {
   } catch (e) {
     res.status(404).json({ error: e.message })
   }
+})
+
+// GET /api/projects/:slug/export — descarga ZIP del proyecto
+router.get('/:slug/export', (req, res) => {
+  const { slug } = req.params
+  const projectDir = path.join(SLIDES_DIR, slug)
+  if (!fs.existsSync(projectDir)) return res.status(404).json({ error: 'Proyecto no encontrado' })
+
+  res.setHeader('Content-Type', 'application/zip')
+  res.setHeader('Content-Disposition', `attachment; filename="${slug}.zip"`)
+
+  const archive = archiver('zip', { zlib: { level: 9 } })
+  archive.on('error', err => { if (!res.headersSent) res.status(500).json({ error: err.message }) })
+  archive.pipe(res)
+  archive.directory(projectDir, slug)
+  archive.finalize()
 })
 
 export default router

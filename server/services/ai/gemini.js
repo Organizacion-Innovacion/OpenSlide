@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
-import { AIProvider } from './provider.js'
+import { AIProvider } from './baseProvider.js'
 import { buildSlideMessages, extractHTML } from './slidePrompts.js'
 
 export class GeminiProvider extends AIProvider {

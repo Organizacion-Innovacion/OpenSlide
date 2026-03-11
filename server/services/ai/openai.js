@@ -1,5 +1,5 @@
 import OpenAI from 'openai'
-import { AIProvider } from './provider.js'
+import { AIProvider } from './baseProvider.js'
 import { buildSlideMessages, extractHTML } from './slidePrompts.js'
 
 export class OpenAIProvider extends AIProvider {

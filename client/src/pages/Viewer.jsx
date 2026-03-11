@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getProject, regenerateSlide } from '../services/api'
+import { getProject, regenerateSlide, exportProject } from '../services/api'
 
 export default function Viewer() {
   const { slug } = useParams()
@@ -35,6 +35,7 @@ export default function Viewer() {
 }
 
 function PresentationViewer({ project, onBack }) {
+  const navigate = useNavigate()
   const [current, setCurrent] = useState(1)
   const [hint, setHint] = useState(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -42,6 +43,11 @@ function PresentationViewer({ project, onBack }) {
   const [scale, setScale] = useState(1)
   const [reloadKey, setReloadKey] = useState(0)
   const [regenerating, setRegenerating] = useState(false)
+
+  // Modal de regeneración
+  const [regenModal, setRegenModal] = useState(false)
+  const [regenInstructions, setRegenInstructions] = useState('')
+  const [regenLoading, setRegenLoading] = useState(false)
 
   const wrapperRef  = useRef(null)
   const rootRef     = useRef(null)
@@ -52,22 +58,27 @@ function PresentationViewer({ project, onBack }) {
   const totalSlides = project.slides.length
   const slideSrc = `/slides/${project.slug}/${project.slides[current - 1]}`
 
-  const handleRegenerateSlide = async () => {
-    const instructions = window.prompt(`Instrucciones para regenerar el slide ${current} (opcional):`, '')
-    if (instructions === null) return // cancelled
-    setRegenerating(true)
+  const handleRegen = async () => {
+    setRegenLoading(true)
     try {
-      const result = await regenerateSlide({ slug: project.slug, slideIndex: current, instructions })
+      const result = await regenerateSlide({ slug: project.slug, slideIndex: current, instructions: regenInstructions })
       if (result.ok) {
         setReloadKey((k) => k + 1)
+        setRegenModal(false)
+        setRegenInstructions('')
       } else {
         alert(`Error al regenerar: ${result.error || 'desconocido'}`)
       }
     } catch (err) {
       alert(`Error al regenerar: ${err.message}`)
     } finally {
-      setRegenerating(false)
+      setRegenLoading(false)
     }
+  }
+
+  const handleRegenerateSlide = () => {
+    setRegenInstructions('')
+    setRegenModal(true)
   }
   const progress = ((current - 1) / Math.max(totalSlides - 1, 1)) * 100
 
@@ -227,6 +238,18 @@ function PresentationViewer({ project, onBack }) {
             <span style={{ color: '#888', fontSize: 13 }}>Slide {current}</span>
           </div>
           <button
+            onClick={() => navigate(`/edit/${project.slug}`)}
+            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#2196F3', borderColor: '#0D47A1' }}
+          >
+            ✏️ Editar con IA
+          </button>
+          <button
+            onClick={() => exportProject(project.slug)}
+            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#888', borderColor: '#333' }}
+          >
+            ⬇ Exportar ZIP
+          </button>
+          <button
             onClick={handleRegenerateSlide}
             disabled={regenerating}
             style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#4CAF50', borderColor: '#1B5E20', opacity: regenerating ? 0.6 : 1 }}
@@ -345,6 +368,28 @@ function PresentationViewer({ project, onBack }) {
             Clic en los bordes · Flechas ⬅ ➡ · Deslizar · <kbd style={{ background: '#1a1a1a', color: '#666', padding: '1px 6px', borderRadius: 4, fontSize: 11, border: '1px solid #333' }}>F</kbd> fullscreen
           </p>
         </>
+      )}
+
+      {/* Modal de regeneración */}
+      {regenModal && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ background: '#111', border: '1px solid #222', borderRadius: 16, padding: 28, width: 480 }}>
+            <h3 style={{ color: '#eee', margin: '0 0 16px', fontSize: 18 }}>Regenerar Slide {current}</h3>
+            <textarea
+              value={regenInstructions}
+              onChange={e => setRegenInstructions(e.target.value)}
+              placeholder="Describe cómo quieres este slide..."
+              rows={4}
+              style={{ width: '100%', background: '#0a0a0a', border: '1px solid #222', borderRadius: 10, padding: '10px 14px', color: '#eee', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+            />
+            <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
+              <button onClick={() => setRegenModal(false)} style={{ background: 'none', border: '1px solid #333', color: '#888', padding: '8px 18px', borderRadius: 8, cursor: 'pointer' }}>Cancelar</button>
+              <button onClick={handleRegen} disabled={regenLoading} style={{ background: 'linear-gradient(135deg,#1B5E20,#4CAF50)', color: '#fff', border: 'none', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, opacity: regenLoading ? 0.5 : 1 }}>
+                {regenLoading ? 'Regenerando...' : '↺ Regenerar'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Floating fullscreen controls */}

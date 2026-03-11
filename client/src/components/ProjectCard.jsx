@@ -14,7 +14,7 @@ const PREVIEW_W = 260
 const PREVIEW_H = Math.round(PREVIEW_W * (9 / 16))
 const PREVIEW_SCALE = PREVIEW_W / 1280
 
-export default function ProjectCard({ project, colorIndex }) {
+export default function ProjectCard({ project, colorIndex, onDelete }) {
   const { from, to } = ACCENT_COLORS[colorIndex % ACCENT_COLORS.length]
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
@@ -56,6 +56,16 @@ export default function ProjectCard({ project, colorIndex }) {
         position: 'absolute', top: 0, left: 0,
         background: `linear-gradient(to right, ${from}, ${to})`
       }} />
+
+      {/* Botón eliminar (hover) */}
+      {hovered && onDelete && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onDelete() }}
+          style={{ position: 'absolute', top: 10, right: 10, zIndex: 30, background: 'rgba(244,67,54,0.15)', border: '1px solid rgba(244,67,54,0.4)', color: '#f44336', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+        >
+          🗑
+        </button>
+      )}
 
       {/* Preview iframe */}
       <div style={{

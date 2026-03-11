@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { createProvider } from '../services/ai/provider.js'
-import { generatePresentation } from '../services/slideGenerator.js'
-import { createProject, getProject, addSlide } from '../services/projectManager.js'
+import { generatePresentation, generatePresentationStream } from '../services/slideGenerator.js'
+import { createProject, getProject, addSlide, updateMeta } from '../services/projectManager.js'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -24,7 +24,7 @@ function getApiKey(model) {
 // Chat con el LLM (para el asistente conversacional)
 router.post('/chat', async (req, res) => {
   try {
-    const { messages, model, apiKey: clientKey } = req.body
+    const { messages, model, apiKey: clientKey, slug } = req.body
     if (!messages || !model) return res.status(400).json({ error: 'messages y model son requeridos' })
 
     const apiKey = clientKey || getApiKey(model)
@@ -32,6 +32,17 @@ router.post('/chat', async (req, res) => {
 
     const provider = createProvider(model, apiKey)
     const message = await provider.chat(messages)
+
+    // Guardar historial si hay slug
+    if (slug) {
+      try {
+        const project = getProject(slug)
+        if (project) {
+          updateMeta(slug, { chatHistory: messages.concat({ role: 'assistant', content: message }) })
+        }
+      } catch {}
+    }
+
     res.json({ message, role: 'assistant' })
   } catch (err) {
     console.error('[AI /chat]', err.message)
@@ -86,6 +97,25 @@ router.post('/generate', async (req, res) => {
   } catch (err) {
     console.error('[AI /generate]', err.message)
     res.status(500).json({ error: err.message })
+  }
+})
+
+// Generar con streaming SSE
+router.post('/generate-stream', async (req, res) => {
+  try {
+    const { slug, model, projectName, brief, slideCount, theme, extraInstructions, apiKey: clientKey } = req.body
+    if (!slug || !model || !projectName || !brief) {
+      return res.status(400).json({ error: 'Faltan parámetros: slug, model, projectName, brief' })
+    }
+    const apiKey = clientKey || getApiKey(model)
+    if (!apiKey) return res.status(400).json({ error: 'API key no configurada' })
+
+    let project = getProject(slug)
+    if (!project) project = createProject({ slug, name: projectName, model })
+
+    await generatePresentationStream({ slug, model, apiKey, projectName, brief, slideCount: parseInt(slideCount) || 5, theme: theme || 'dark-tech', extraInstructions }, res)
+  } catch (err) {
+    if (!res.headersSent) res.status(500).json({ error: err.message })
   }
 })
 

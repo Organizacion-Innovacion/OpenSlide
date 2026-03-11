@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useProjectStore } from '../store/useProjectStore'
-import { getProjects } from '../services/api'
+import { getProjects, deleteProject } from '../services/api'
 import ProjectCard from '../components/ProjectCard'
 
 export default function Home() {
@@ -15,6 +15,12 @@ export default function Home() {
       .catch(() => setProjects([]))
       .finally(() => setLoading(false))
   }, [])
+
+  const handleDelete = async (slug) => {
+    if (!confirm(`¿Eliminar el proyecto "${slug}"? Esta acción no se puede deshacer.`)) return
+    await deleteProject(slug)
+    setProjects(prev => prev.filter(p => p.slug !== slug))
+  }
 
   return (
     <div style={{
@@ -130,7 +136,7 @@ export default function Home() {
             justifyContent: 'center', maxWidth: 1000, zIndex: 1,
           }}>
             {projects.map((project, i) => (
-              <ProjectCard key={project.slug} project={project} colorIndex={i} />
+              <ProjectCard key={project.slug} project={project} colorIndex={i} onDelete={() => handleDelete(project.slug)} />
             ))}
           </div>
         </>

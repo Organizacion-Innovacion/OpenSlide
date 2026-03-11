@@ -16,10 +16,10 @@ export const saveSettings = (data) => fetch(`${BASE}/settings`, {
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify(data)
 }).then(r => r.json())
-export const sendChat = (messages, model, apiKey) => fetch(`${BASE}/ai/chat`, {
+export const sendChat = (messages, model, apiKey, slug = null) => fetch(`${BASE}/ai/chat`, {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ messages, model, apiKey })
+  body: JSON.stringify({ messages, model, apiKey, slug })
 }).then(r => r.json())
 export const generateSlide = (context) => fetch(`${BASE}/ai/generate-slide`, {
   method: 'POST',
@@ -47,3 +47,51 @@ export const regenerateSlide = (data) =>
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(data)
   }).then(r => r.json())
+
+export function generatePresentationStream(data, callbacks) {
+  const { onStatus, onPlan, onProgress, onSlide, onComplete, onFatal } = callbacks
+
+  fetch(`${BASE}/ai/generate-stream`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  }).then(res => {
+    const reader = res.body.getReader()
+    const decoder = new TextDecoder()
+    let buffer = ''
+
+    const processChunk = ({ done, value }) => {
+      if (done) return
+      buffer += decoder.decode(value, { stream: true })
+      const lines = buffer.split('\n')
+      buffer = lines.pop()
+
+      let currentEvent = null
+      for (const line of lines) {
+        if (line.startsWith('event: ')) currentEvent = line.slice(7).trim()
+        if (line.startsWith('data: ') && currentEvent) {
+          try {
+            const payload = JSON.parse(line.slice(6))
+            if (currentEvent === 'status' && onStatus) onStatus(payload)
+            if (currentEvent === 'plan' && onPlan) onPlan(payload)
+            if (currentEvent === 'progress' && onProgress) onProgress(payload)
+            if (currentEvent === 'slide' && onSlide) onSlide(payload)
+            if (currentEvent === 'complete' && onComplete) onComplete(payload)
+            if (currentEvent === 'fatal' && onFatal) onFatal(payload)
+          } catch {}
+          currentEvent = null
+        }
+      }
+      return reader.read().then(processChunk)
+    }
+
+    reader.read().then(processChunk)
+  }).catch(err => { if (onFatal) onFatal({ message: err.message }) })
+}
+
+export const exportProject = (slug) => {
+  const a = document.createElement('a')
+  a.href = `${BASE}/projects/${slug}/export`
+  a.download = `${slug}.zip`
+  a.click()
+}
