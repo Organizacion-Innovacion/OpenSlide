@@ -2,13 +2,36 @@ import puppeteer from 'puppeteer-core'
 import pptxgen from 'pptxgenjs'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
+import { execFileSync } from 'child_process'
 import { getProject } from './projectManager.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
-// Buscar Chrome instalado en el sistema
+// Resolver el path real de Chrome siguiendo symlinks
 function getChromePath() {
-  return process.env.CHROME_PATH || '/usr/bin/google-chrome'
+  if (process.env.CHROME_PATH) return process.env.CHROME_PATH
+
+  // Intentar resolver el symlink /usr/bin/google-chrome al ejecutable real
+  try {
+    const real = execFileSync('readlink', ['-f', '/usr/bin/google-chrome'], { encoding: 'utf-8' }).trim()
+    if (real && fs.existsSync(real)) return real
+  } catch {}
+
+  // Fallback a paths directos conocidos (en orden de preferencia)
+  const candidates = [
+    '/opt/google/chrome/google-chrome',
+    '/opt/google/chrome-stable/google-chrome',
+    '/usr/bin/google-chrome-stable',
+    '/usr/bin/chromium-browser',
+    '/usr/bin/chromium',
+    '/usr/bin/google-chrome',
+  ]
+  for (const c of candidates) {
+    if (fs.existsSync(c)) return c
+  }
+
+  return '/usr/bin/google-chrome'
 }
 
 /**
