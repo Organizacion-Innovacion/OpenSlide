@@ -4,6 +4,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   server: {
+    host: true,   // equivale a --host: escucha en 0.0.0.0 para acceso desde red
     proxy: {
       '/api': {
         target: 'http://localhost:3001',

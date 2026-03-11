@@ -29,35 +29,48 @@ Ver [ARCHITECTURE.md](./ARCHITECTURE.md) para detalles técnicos completos.
 
 ## 🚀 Inicio rápido
 
-### Con Docker (recomendado)
+**Requisitos:** Node.js 20+
 
 ```bash
 git clone https://github.com/yonyhome/OpenSlide.git
 cd OpenSlide
+npm run install:all   # instala dependencias de client/ y server/
+npm run setup         # configura API keys y opciones de red (interactivo)
+npm run dev           # arranca todo con un solo comando
+```
+
+Abrir http://localhost:5173 en el navegador.
+
+### Modo producción (un solo puerto)
+
+```bash
+npm start             # compila el cliente y sirve todo desde puerto 3001
+```
+
+Abrir http://localhost:3001
+
+### Con Docker
+
+```bash
 docker compose up -d
 ```
 
-Abrir http://localhost en el navegador.
-
-### Desarrollo local
-
-**Requisitos:** Node.js 20+
-
-```bash
-# Instalar dependencias
-cd client && npm install
-cd ../server && npm install
-
-# Terminal 1 — servidor (puerto 3001)
-cd server && npm run dev
-
-# Terminal 2 — cliente (puerto 5173)
-cd client && npm run dev
-```
-
-Abrir http://localhost:5173
+Abrir http://localhost
 
 ## ⚙️ Configuración
+
+### Desde la consola (recomendado para primera vez)
+
+```bash
+npm run setup
+```
+
+El asistente de configuración te guía para:
+- Agregar API keys de OpenAI, Anthropic y/o Google Gemini
+- Elegir el puerto del servidor
+- Configurar modo de red (solo local o accesible desde otros dispositivos)
+
+### Desde la interfaz web
 
 1. Ir a **Settings** (⚙️ en el header)
 2. Ingresar la API key del proveedor que tengas disponible:
@@ -135,6 +148,45 @@ docker compose build
 
 # Reconstruir y reiniciar
 docker compose up -d --build
+```
+
+## 🌐 Acceso desde otros dispositivos
+
+Hay dos formas de compartir tus presentaciones:
+
+### Modo red local (LAN)
+
+Ejecuta `npm run setup` y elige **modo red**. Luego:
+
+```bash
+npm run dev    # o npm start
+```
+
+El servidor mostrará tu IP local al arrancar:
+```
+  ▶  OpenSlide API corriendo
+     http://localhost:3001
+     http://192.168.1.X:3001  ← red local
+```
+
+Desde cualquier dispositivo en la misma red WiFi, abre esa URL.
+
+### Modo producción con `npm start`
+
+```bash
+npm start
+```
+
+Sirve el cliente compilado + API en un solo puerto. Ideal para demos o presentaciones en vivo.
+
+### Exposición pública (túnel temporal)
+
+Para compartir con personas fuera de tu red:
+
+```bash
+npx localtunnel --port 3001   # genera un URL público temporal
+# o
+npx ngrok http 3001
 ```
 
 ## 🔒 Seguridad

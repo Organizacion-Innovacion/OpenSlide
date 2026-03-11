@@ -1,9 +1,20 @@
 {
   "name": "openslide",
+  "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "description": "Generador de presentaciones HTML asistido por IA",
   "scripts": {
-    "dev:client": "cd client && npm run dev",
-    "dev:server": "cd server && npm run dev",
+    "setup":       "node setup.js",
+    "dev":         "concurrently -n SERVER,CLIENT -c green,cyan \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server":  "cd server && npm run dev",
+    "dev:client":  "cd client && npm run dev",
+    "start":       "node start.js",
+    "start:build": "node start.js --build",
+    "build":       "cd client && npm run build",
     "install:all": "cd client && npm install && cd ../server && npm install"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
   }
 }
