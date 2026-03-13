@@ -209,7 +209,7 @@ export default function EditProject() {
                     }}
                   >
                     <iframe
-                      src={slideUrl}
+                      src={`/slides/${slug}/${slideUrl}`}
                       title={`Slide ${idx}`}
                       sandbox="allow-scripts allow-same-origin"
                       style={{ position: 'absolute', top: 0, left: 0, width: '1280px', height: '720px', border: 'none', transform: `scale(${thumbScale})`, transformOrigin: 'top left', pointerEvents: 'none' }}
@@ -235,7 +235,7 @@ export default function EditProject() {
               {selectedSlide && project.slides && project.slides[selectedSlide - 1] ? (
                 <div style={{ position: 'relative', width: `${1280 * scale}px`, height: `${720 * scale}px`, background: '#111', borderRadius: 6, overflow: 'hidden', border: '1px solid #1a1a1a', boxShadow: '0 8px 40px rgba(0,0,0,0.8)', flexShrink: 0 }}>
                   <iframe
-                    src={project.slides[selectedSlide - 1]}
+                    src={`/slides/${slug}/${project.slides[selectedSlide - 1]}`}
                     title={`Slide ${selectedSlide}`}
                     sandbox="allow-scripts allow-same-origin"
                     style={{ position: 'absolute', top: 0, left: 0, width: '1280px', height: '720px', border: 'none', transform: `scale(${scale})`, transformOrigin: 'top left', pointerEvents: 'none' }}

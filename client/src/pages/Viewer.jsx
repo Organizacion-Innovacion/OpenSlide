@@ -58,11 +58,13 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
   const [exportingFormat, setExportingFormat] = useState(null) // 'pdf' | 'pptx' | 'zip' | null
 
-  const wrapperRef  = useRef(null)
-  const rootRef     = useRef(null)
-  const controlsRef = useRef(null)
-  const hideTimerRef = useRef(null)
-  const touchStartX = useRef(null)
+  const wrapperRef     = useRef(null)
+  const rootRef        = useRef(null)
+  const controlsRef    = useRef(null)
+  const hideTimerRef   = useRef(null)
+  const topBarRef      = useRef(null)
+  const topHideTimerRef = useRef(null)
+  const touchStartX    = useRef(null)
 
   const totalSlides = project.slides.length
   const slideSrc = `/slides/${project.slug}/${project.slides[current - 1]}`
@@ -141,6 +143,7 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     onBack()
   }, [onBack])
 
+  // Auto-hide para controles fullscreen
   const revealControls = useCallback(() => {
     const el = controlsRef.current
     if (!el) return
@@ -154,6 +157,20 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     }, 3000)
   }, [])
 
+  // Auto-hide para barra superior en modo normal
+  const revealTopBar = useCallback(() => {
+    const el = topBarRef.current
+    if (!el) return
+    el.style.opacity = '1'
+    el.style.pointerEvents = 'auto'
+    clearTimeout(topHideTimerRef.current)
+    topHideTimerRef.current = setTimeout(() => {
+      if (!topBarRef.current) return
+      topBarRef.current.style.opacity = '0'
+      topBarRef.current.style.pointerEvents = 'none'
+    }, 3000)
+  }, [])
+
   useEffect(() => {
     if (isFullscreen) {
       const t = setTimeout(revealControls, 80)
@@ -162,6 +179,12 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     clearTimeout(hideTimerRef.current)
   }, [isFullscreen, revealControls])
 
+  // Mostrar la barra superior al montar
+  useEffect(() => {
+    revealTopBar()
+  }, [revealTopBar])
+
+  // Scale correcto: considera tanto ancho como alto
   useEffect(() => {
     const update = () => {
       if (document.fullscreenElement) {
@@ -170,10 +193,13 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         setFsSize({ w: Math.round(1280 * sc), h: Math.round(720 * sc) })
       } else {
         setFsSize(null)
-        const el = wrapperRef.current
-        if (!el) return
-        const w = el.getBoundingClientRect().width
-        if (w > 0) setScale(w / 1280)
+        const availW = window.innerWidth
+        const reservedH = 120 // barra inferior: dots + thumbnails + margen
+        const availH = window.innerHeight - reservedH
+        const scW = availW / 1280
+        const scH = availH / 720
+        const sc = Math.min(scW, scH, 1) // nunca mayor que 1:1
+        setScale(sc > 0 ? sc : 1)
       }
     }
     const raf = requestAnimationFrame(update)
@@ -183,6 +209,7 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', update)
       document.removeEventListener('fullscreenchange', update)
+      clearTimeout(topHideTimerRef.current)
     }
   }, [])
 
@@ -221,6 +248,7 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
 
   const handleMouseMove = (e) => {
     if (isFullscreen) revealControls()
+    if (!isFullscreen) revealTopBar()
     if (!wrapperRef.current) return
     const rect = wrapperRef.current.getBoundingClientRect()
     const x = e.clientX - rect.left
@@ -241,10 +269,12 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
       }
     : {
         position: 'relative', overflow: 'hidden', background: '#fff',
-        userSelect: 'none', maxWidth: '1280px', width: '100%',
+        userSelect: 'none',
+        width: `${1280 * scale}px`,
         height: `${720 * scale}px`,
+        maxWidth: '100vw',
         cursor: hint === 'prev' ? 'w-resize' : hint === 'next' ? 'e-resize' : 'default',
-        borderRadius: 12, boxShadow: '0 16px 60px rgba(0,0,0,0.8)',
+        borderRadius: 8, boxShadow: '0 16px 60px rgba(0,0,0,0.8)',
         flexShrink: 0,
       }
 
@@ -259,89 +289,98 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
       ref={rootRef}
       onMouseMove={handleMouseMove}
       style={{
+        position: 'relative',
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center',
-        width: isFullscreen ? '100vw' : undefined,
-        height: isFullscreen ? '100vh' : undefined,
-        minHeight: isFullscreen ? undefined : '100vh',
+        width: isFullscreen ? '100vw' : '100%',
+        height: isFullscreen ? '100vh' : '100vh',
         overflow: 'hidden',
         fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        padding: isFullscreen ? 0 : '20px 16px',
         background: isFullscreen ? '#000' : '#0a0a0a',
         boxSizing: 'border-box',
       }}
     >
-      {/* Progress bar */}
-      {!isFullscreen && (
-        <div style={{ width: '100%', maxWidth: 1280, height: 3, background: '#151515', borderRadius: 2, overflow: 'hidden' }}>
-          <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(to right, #1B5E20, #4CAF50)', borderRadius: 2, transition: 'width 0.35s ease' }} />
-        </div>
-      )}
+      {/* Progress bar — absoluta, arriba de todo, solo en modo normal */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40,
+        height: 3, background: '#151515',
+        display: isFullscreen ? 'none' : 'block',
+      }}>
+        <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(to right, #1B5E20, #4CAF50)', transition: 'width 0.35s ease' }} />
+      </div>
 
-      {/* Top bar */}
-      {!isFullscreen && (
-        <div style={{ width: '100%', maxWidth: 1280, display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0 12px', boxSizing: 'border-box' }}>
-          <button onClick={handleBack} style={{ ...btnStyle, padding: '7px 16px', fontSize: 13, color: '#aaa' }}>
-            ← Proyectos
-          </button>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1 }}>
-            <span style={{ color: '#555', fontSize: 13, textTransform: 'capitalize' }}>{project.name.replace(/-/g, ' ')}</span>
-            <span style={{ color: '#333', fontSize: 13 }}>›</span>
-            <span style={{ color: '#888', fontSize: 13 }}>Slide {current}</span>
-          </div>
-          <button
-            onClick={() => navigate(`/edit/${project.slug}`)}
-            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#2196F3', borderColor: '#0D47A1' }}
-          >
-            ✏️ Editar con IA
-          </button>
-          <div style={{ position: 'relative' }}>
-            <button
-              onClick={() => !exportingFormat && setExportMenuOpen(!exportMenuOpen)}
-              disabled={!!exportingFormat}
-              style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: exportingFormat ? '#4CAF50' : '#888', borderColor: exportingFormat ? '#1B5E20' : '#333', opacity: exportingFormat ? 1 : 1 }}
-            >
-              {exportingFormat ? `⏳ Generando ${exportingFormat.toUpperCase()}...` : '⬇ Exportar ▾'}
-            </button>
-            {exportMenuOpen && !exportingFormat && (
-              <div style={{
-                position: 'absolute', top: '100%', right: 0, marginTop: 4,
-                background: '#111', border: '1px solid #222', borderRadius: 10,
-                padding: 6, zIndex: 100, minWidth: 220,
-              }}>
-                {[
-                  { label: '📄 PDF', fmt: 'pdf', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pdf') } },
-                  { label: '📊 PowerPoint (.pptx)', fmt: 'pptx', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pptx') } },
-                  { label: '📦 ZIP (HTMLs)', fmt: 'zip', note: 'Inmediato', action: () => { setExportMenuOpen(false); handleExport('zip') } },
-                ].map(item => (
-                  <button key={item.label} onClick={item.action} style={{
-                    display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between',
-                    padding: '8px 12px', borderRadius: 7, border: 'none',
-                    background: 'none', color: '#ccc', cursor: 'pointer', fontSize: 13, textAlign: 'left',
-                    boxSizing: 'border-box',
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
-                    onMouseLeave={e => e.currentTarget.style.background = 'none'}
-                  >
-                    <span>{item.label}</span>
-                    <span style={{ color: '#333', fontSize: 11 }}>{item.note}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          <button
-            onClick={handleRegenerateSlide}
-            disabled={regenerating}
-            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#4CAF50', borderColor: '#1B5E20', opacity: regenerating ? 0.6 : 1 }}
-          >
-            {regenerating ? '⏳ Regenerando...' : '↺ Regenerar slide'}
-          </button>
-          <span style={{ color: '#666', fontSize: 13, fontWeight: 600 }}>
-            {current} <span style={{ color: '#444' }}>/</span> {totalSlides}
-          </span>
+      {/* Top bar — overlay auto-hide en modo normal */}
+      <div
+        ref={topBarRef}
+        style={{
+          position: 'absolute', top: 0, left: 0, right: 0, zIndex: 30,
+          display: isFullscreen ? 'none' : 'flex',
+          alignItems: 'center', gap: 12, padding: '10px 16px',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)',
+          transition: 'opacity 0.4s ease',
+          boxSizing: 'border-box',
+        }}
+      >
+        <button onClick={handleBack} style={{ ...btnStyle, padding: '7px 16px', fontSize: 13, color: '#aaa' }}>
+          ← Proyectos
+        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1 }}>
+          <span style={{ color: '#aaa', fontSize: 13, textTransform: 'capitalize' }}>{project.name.replace(/-/g, ' ')}</span>
+          <span style={{ color: '#555', fontSize: 13 }}>›</span>
+          <span style={{ color: '#888', fontSize: 13 }}>Slide {current}</span>
         </div>
-      )}
+        <button
+          onClick={() => navigate(`/edit/${project.slug}`)}
+          style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#2196F3', borderColor: '#0D47A1' }}
+        >
+          ✏️ Editar con IA
+        </button>
+        <div style={{ position: 'relative' }}>
+          <button
+            onClick={() => !exportingFormat && setExportMenuOpen(!exportMenuOpen)}
+            disabled={!!exportingFormat}
+            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: exportingFormat ? '#4CAF50' : '#888', borderColor: exportingFormat ? '#1B5E20' : '#333' }}
+          >
+            {exportingFormat ? `⏳ Generando ${exportingFormat.toUpperCase()}...` : '⬇ Exportar ▾'}
+          </button>
+          {exportMenuOpen && !exportingFormat && (
+            <div style={{
+              position: 'absolute', top: '100%', right: 0, marginTop: 4,
+              background: '#111', border: '1px solid #222', borderRadius: 10,
+              padding: 6, zIndex: 100, minWidth: 220,
+            }}>
+              {[
+                { label: '📄 PDF', fmt: 'pdf', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pdf') } },
+                { label: '📊 PowerPoint (.pptx)', fmt: 'pptx', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pptx') } },
+                { label: '📦 ZIP (HTMLs)', fmt: 'zip', note: 'Inmediato', action: () => { setExportMenuOpen(false); handleExport('zip') } },
+              ].map(item => (
+                <button key={item.label} onClick={item.action} style={{
+                  display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between',
+                  padding: '8px 12px', borderRadius: 7, border: 'none',
+                  background: 'none', color: '#ccc', cursor: 'pointer', fontSize: 13, textAlign: 'left',
+                  boxSizing: 'border-box',
+                }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
+                  onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                >
+                  <span>{item.label}</span>
+                  <span style={{ color: '#333', fontSize: 11 }}>{item.note}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <button
+          onClick={handleRegenerateSlide}
+          disabled={regenerating}
+          style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#4CAF50', borderColor: '#1B5E20', opacity: regenerating ? 0.6 : 1 }}
+        >
+          {regenerating ? '⏳ Regenerando...' : '↺ Regenerar slide'}
+        </button>
+        <span style={{ color: '#666', fontSize: 13, fontWeight: 600 }}>
+          {current} <span style={{ color: '#444' }}>/</span> {totalSlides}
+        </span>
+      </div>
 
       {/* Slide wrapper */}
       <div
@@ -411,10 +450,16 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         />
       </div>
 
-      {/* Normal controls */}
+      {/* Normal controls — overlay en la parte baja */}
       {!isFullscreen && (
-        <>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginTop: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 30,
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          padding: '8px 16px 12px',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)',
+          boxSizing: 'border-box',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
             <button onClick={prev} disabled={current === 1} style={{ ...btnStyle, opacity: current === 1 ? 0.3 : 1 }}>
               ← Anterior
             </button>
@@ -445,10 +490,10 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
             </button>
           </div>
 
-          <p style={{ marginTop: 10, color: '#333', fontSize: 12 }}>
-            Clic en los bordes · Flechas ⬅ ➡ · Deslizar · <kbd style={{ background: '#1a1a1a', color: '#666', padding: '1px 6px', borderRadius: 4, fontSize: 11, border: '1px solid #333' }}>F</kbd> fullscreen
+          <p style={{ margin: '6px 0 0', color: '#444', fontSize: 11 }}>
+            Clic en los bordes · Flechas ⬅ ➡ · Deslizar · <kbd style={{ background: '#1a1a1a', color: '#555', padding: '1px 6px', borderRadius: 4, fontSize: 10, border: '1px solid #333' }}>F</kbd> fullscreen
           </p>
-        </>
+        </div>
       )}
 
       {/* Modal de regeneración */}
