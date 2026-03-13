@@ -59,13 +59,18 @@ function SlideCanvas({ slides, isGenerating }) {
     if (slides.length > 0) setSelectedIdx(slides.length - 1)
   }, [slides.length])
 
-  // Calcular escala con ResizeObserver
+  // Calcular escala con ResizeObserver — usar Math.min para evitar overflow vertical
   useEffect(() => {
     if (!previewRef.current) return
     const el = previewRef.current
     const calc = () => {
-      const w = el.getBoundingClientRect().width
-      if (w > 0) setScale(w / 1280)
+      const { width, height } = el.getBoundingClientRect()
+      const padding = 32 // 16px cada lado
+      const availW = width - padding
+      const availH = height - padding
+      if (availW > 0 && availH > 0) {
+        setScale(Math.min(availW / 1280, availH / 720))
+      }
     }
     calc()
     const ro = new ResizeObserver(calc)
@@ -138,6 +143,14 @@ function SlideCanvas({ slides, isGenerating }) {
                   sandbox="allow-scripts allow-same-origin"
                   style={{ width: '1280px', height: '720px', border: 'none', transform: 'scale(0.0609)', transformOrigin: 'top left', pointerEvents: 'none' }}
                 />
+                {/* Animación pulsing en el último slide cuando se está generando */}
+                {isGenerating && i === slides.length - 1 && (
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'rgba(76,175,80,0.15)',
+                    animation: 'shimmer 1.5s ease-in-out infinite',
+                  }} />
+                )}
                 <div style={{ position: 'absolute', bottom: 2, right: 4, color: selectedIdx === i ? '#4CAF50' : '#333', fontSize: 9, fontWeight: 700 }}>{i + 1}</div>
               </button>
             ))}
@@ -150,7 +163,7 @@ function SlideCanvas({ slides, isGenerating }) {
         )}
 
         {/* Preview / Code principal */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', minWidth: 0 }}>
+        <div ref={previewRef} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', minWidth: 0 }}>
           {!selectedUrl ? (
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: 48, marginBottom: 12 }}>🎨</div>
@@ -159,14 +172,23 @@ function SlideCanvas({ slides, isGenerating }) {
               </p>
             </div>
           ) : view === 'preview' ? (
-            <div ref={previewRef} style={{ width: '100%', maxWidth: '100%' }}>
-              <div style={{ position: 'relative', height: `${720 * scale}px`, background: '#111', borderRadius: 6, overflow: 'hidden', border: '1px solid #1a1a1a', boxShadow: '0 8px 40px rgba(0,0,0,0.8)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'relative', width: `${1280 * scale}px`, height: `${720 * scale}px`, background: '#111', borderRadius: 6, overflow: 'hidden', border: '1px solid #1a1a1a', boxShadow: '0 8px 40px rgba(0,0,0,0.8)', flexShrink: 0 }}>
                 <iframe
                   key={selectedUrl}
                   src={selectedUrl}
                   sandbox="allow-scripts allow-same-origin"
                   style={{ position: 'absolute', top: 0, left: 0, width: '1280px', height: '720px', border: 'none', transform: `scale(${scale})`, transformOrigin: 'top left', pointerEvents: 'none' }}
                 />
+                {/* Shimmer overlay cuando se está generando */}
+                {isGenerating && (
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: 'linear-gradient(135deg, rgba(76,175,80,0.06) 0%, rgba(76,175,80,0.02) 50%, rgba(76,175,80,0.06) 100%)',
+                    animation: 'shimmer 2s ease-in-out infinite',
+                    pointerEvents: 'none',
+                  }} />
+                )}
               </div>
               <p style={{ color: '#1e1e1e', fontSize: 10, textAlign: 'center', margin: '6px 0 0' }}>Slide {selectedIdx + 1}</p>
             </div>

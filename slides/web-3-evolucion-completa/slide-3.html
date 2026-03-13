@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin:0; background:#0a0a0a; font-family:'Segoe UI',Arial,sans-serif; color:#e0e0e0; }
+    .slide { width:1280px; height:720px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:80px; box-sizing:border-box; border-left:4px solid #4ade80; position:relative; overflow:hidden; }
+    h1 { font-size:56px; font-weight:700; margin:0 0 12px; color:#fff; line-height:1.1; }
+    .subtitle { font-size:28px; color:#4ade80; margin:0 0 40px; font-style:italic; }
+    h2 { font-size:32px; font-weight:600; margin:30px 0 16px; color:#4ade80; }
+    p, li { font-size:22px; line-height:1.6; margin:6px 0; color:#ccc; }
+    .accent { color:#4ade80; }
+    .tag { background:#4ade8022; color:#4ade80; padding:4px 12px; border-radius:20px; font-size:18px; border:1px solid #4ade8044; display:inline-block; margin:4px; }
+    .slide-number { position:absolute; bottom:30px; right:80px; font-size:20px; color:#555; }
+    
+    .content-wrapper { display:flex; gap:60px; width:100%; }
+    .left-column { flex:1; }
+    .right-column { flex:1; display:flex; flex-direction:column; justify-content:center; }
+    
+    .features { margin:20px 0; }
+    .feature-item { display:flex; align-items:center; margin:12px 0; }
+    .feature-item::before { content:'▸'; color:#4ade80; font-size:24px; margin-right:12px; }
+    
+    .examples { display:flex; gap:12px; flex-wrap:wrap; margin:16px 0; }
+    
+    .problem-box { background:#ff444422; border:2px solid #ff4444; border-radius:12px; padding:24px; margin-top:24px; }
+    .problem-box h2 { color:#ff6666; margin-top:0; font-size:28px; }
+    .problem-box ul { margin:12px 0; padding-left:20px; }
+    .problem-box li { color:#ffaaaa; font-size:20px; line-height:1.5; }
+    
+    .visualization { position:relative; height:280px; display:flex; align-items:center; justify-content:center; }
+    
+    .social-icon { width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:24px; position:absolute; animation:pulse 2s infinite; border:3px solid; }
+    
+    .icon1 { background:#1877f2; border-color:#4a9eff; top:20px; left:40px; animation-delay:0s; }
+    .icon2 { background:#ff0000; border-color:#ff4444; top:20px; right:40px; animation-delay:0.2s; }
+    .icon3 { background:#1da1f2; border-color:#4ab3f4; bottom:20px; left:60px; animation-delay:0.4s; }
+    .icon4 { background:#666; border-color:#999; bottom:20px; right:60px; animation-delay:0.6s; }
+    
+    .central-server { width:140px; height:140px; background:linear-gradient(135deg, #ff4444, #cc0000); border-radius:20px; display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; color:#fff; border:4px solid #ff6666; box-shadow:0 0 40px #ff444466; animation:glow 2s infinite; }
+    
+    .arrow { position:absolute; width:80px; height:3px; background:linear-gradient(90deg, #4ade80, transparent); transform-origin:left center; }
+    .arrow1 { top:80px; left:120px; transform:rotate(15deg); }
+    .arrow2 { top:80px; right:120px; transform:rotate(165deg); }
+    .arrow3 { bottom:80px; left:140px; transform:rotate(-15deg); }
+    .arrow4 { bottom:80px; right:140px; transform:rotate(-165deg); }
+    
+    @keyframes pulse { 0%, 100% { transform:scale(1); } 50% { transform:scale(1.08); } }
+    @keyframes glow { 0%, 100% { box-shadow:0 0 40px #ff444466; } 50% { box-shadow:0 0 60px #ff4444aa; } }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <h1>Web 2.0 (2004-presente)</h1>
+    <p class="subtitle">La Revolución Social: Leer y Escribir</p>
+    
+    <div class="content-wrapper">
+      <div class="left-column">
+        <div class="features">
+          <div class="feature-item">Interactividad bidireccional</div>
+          <div class="feature-item">Redes sociales masivas</div>
+          <div class="feature-item">Contenido generado por usuarios</div>
+          <div class="feature-item">Aplicaciones web dinámicas</div>
+        </div>
+        
+        <h2>Ejemplos destacados:</h2>
+        <div class="examples">
+          <span class="tag">Facebook</span>
+          <span class="tag">YouTube</span>
+          <span class="tag">Wikipedia</span>
+          <span class="tag">Twitter</span>
+        </div>
+        
+        <div class="problem-box">
+          <h2>⚠ Problema Emergente</h2>
+          <ul>
+            <li>Centralización en grandes corporaciones</li>
+            <li>Pérdida de control y privacidad del usuario</li>
+            <li>Monetización masiva de datos personales</li>
+            <li>Poder concentrado en Google, Meta, Amazon</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="right-column">
+        <div class="visualization">
+          <div class="social-icon icon1">f</div>
+          <div class="social-icon icon2">▶</div>
+          <div class="social-icon icon3">🐦</div>
+          <div class="social-icon icon4">W</div>
+          
+          <div class="arrow arrow1"></div>
+          <div class="arrow arrow2"></div>
+          <div class="arrow arrow3"></div>
+          <div class="arrow arrow4"></div>
+          
+          <div class="central-server">🏢</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="slide-number">3/5</div>
+  </div>
+</body>
+</html>

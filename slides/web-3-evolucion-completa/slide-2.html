@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin:0; background:#0a0a0a; font-family:'Segoe UI',Arial,sans-serif; color:#e0e0e0; }
+    .slide { width:1280px; height:720px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:80px; box-sizing:border-box; border-left:4px solid #4ade80; position:relative; overflow:hidden; }
+    h1 { font-size:56px; font-weight:700; margin:0 0 12px; color:#fff; line-height:1.1; }
+    h2 { font-size:32px; font-weight:600; margin:0 0 40px; color:#4ade80; }
+    .content-wrapper { display:flex; gap:60px; width:100%; }
+    .left-column { flex:1; }
+    .right-column { flex:1; display:flex; flex-direction:column; justify-content:center; }
+    .section-title { font-size:22px; font-weight:600; color:#4ade80; margin:0 0 16px; text-transform:uppercase; letter-spacing:1px; }
+    .feature-list { list-style:none; padding:0; margin:0 0 32px; }
+    .feature-list li { font-size:20px; line-height:1.8; margin:0 0 12px; color:#ccc; padding-left:24px; position:relative; }
+    .feature-list li:before { content:'▸'; position:absolute; left:0; color:#4ade80; font-weight:bold; }
+    .examples { background:#151515; border:1px solid #2a2a2a; border-radius:8px; padding:20px 24px; margin-bottom:32px; }
+    .examples p { font-size:18px; margin:8px 0; color:#aaa; }
+    .examples strong { color:#4ade80; }
+    .limitation { background:#4ade8011; border-left:3px solid #4ade80; padding:16px 20px; border-radius:4px; }
+    .limitation p { font-size:19px; margin:0; color:#e0e0e0; }
+    .limitation strong { color:#4ade80; }
+    .browser-mockup { background:#1a1a1a; border:2px solid #333; border-radius:8px; padding:0; height:420px; display:flex; flex-direction:column; box-shadow:0 8px 32px rgba(0,0,0,0.6); }
+    .browser-header { background:#2a2a2a; height:32px; border-radius:6px 6px 0 0; display:flex; align-items:center; padding:0 12px; border-bottom:1px solid #444; }
+    .browser-dots { display:flex; gap:6px; }
+    .dot { width:10px; height:10px; border-radius:50%; background:#555; }
+    .browser-body { flex:1; padding:24px; background:#f0f0f0; font-family:'Courier New',monospace; overflow:hidden; }
+    .retro-page { font-size:14px; color:#000; }
+    .retro-page h3 { font-size:24px; color:#0000ff; text-decoration:underline; margin:0 0 16px; text-align:center; }
+    .retro-page p { margin:12px 0; line-height:1.6; }
+    .retro-page hr { border:1px solid #999; margin:16px 0; }
+    .retro-page a { color:#0000ff; text-decoration:underline; }
+    .tag { background:#4ade8022; color:#4ade80; padding:6px 16px; border-radius:20px; font-size:16px; border:1px solid #4ade8044; display:inline-block; margin-bottom:8px; }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <span class="tag">1990 - 2004</span>
+    <h1>Web 1.0: Los Inicios</h1>
+    <h2>La Web de Solo Lectura</h2>
+    
+    <div class="content-wrapper">
+      <div class="left-column">
+        <div class="section-title">Características Principales</div>
+        <ul class="feature-list">
+          <li>Páginas estáticas en HTML puro</li>
+          <li>Usuarios como consumidores pasivos</li>
+          <li>Información unidireccional</li>
+          <li>Contenido creado solo por webmasters</li>
+        </ul>
+
+        <div class="examples">
+          <div class="section-title" style="margin-bottom:12px;">Ejemplos Concretos</div>
+          <p><strong>Netscape Navigator</strong> — Navegador dominante</p>
+          <p><strong>Páginas personales</strong> — GeoCities, Angelfire</p>
+          <p><strong>Yahoo Directory</strong> — Catálogos web manuales</p>
+        </div>
+
+        <div class="limitation">
+          <p><strong>⚠ Limitación Clave:</strong> Imposibilidad de interacción y participación del usuario. Sin comentarios, sin perfiles, sin comunidad.</p>
+        </div>
+      </div>
+
+      <div class="right-column">
+        <div class="browser-mockup">
+          <div class="browser-header">
+            <div class="browser-dots">
+              <div class="dot"></div>
+              <div class="dot"></div>
+              <div class="dot"></div>
+            </div>
+          </div>
+          <div class="browser-body">
+            <div class="retro-page">
+              <h3>¡Bienvenido a mi Página Personal!</h3>
+              <hr>
+              <p><b>Última actualización:</b> 15 de Marzo, 1998</p>
+              <p>Hola visitante número <b>[000042]</b></p>
+              <hr>
+              <p><b>Sobre Mí:</b></p>
+              <p>Mi nombre es Juan. Esta es mi página personal en Internet. Aquí encontrarás información sobre mis hobbies e intereses.</p>
+              <hr>
+              <p><b>Mis Links Favoritos:</b></p>
+              <p>→ <a href="#">Alta Vista</a> - Buscador</p>
+              <p>→ <a href="#">GeoCities</a> - Hospedaje gratis</p>
+              <p>→ <a href="#">Netscape</a> - Navegador</p>
+              <hr>
+              <p style="text-align:center; font-size:12px;">
+                <img src="data:image/svg+xml,%3Csvg width='88' height='31' xmlns='http://www.w3.org/2000/svg'%3E%3Crect fill='%230000ff' width='88' height='31'/%3E%3Ctext x='44' y='20' font-family='Arial' font-size='10' fill='white' text-anchor='middle'%3ENetscape Now!%3C/text%3E%3C/svg%3E" alt="Netscape">
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

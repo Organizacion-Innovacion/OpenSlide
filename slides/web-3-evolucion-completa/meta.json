@@ -1,0 +1,18 @@
+{
+  "name": "web-3-evolucion-completa",
+  "slug": "web-3-evolucion-completa",
+  "createdAt": "2026-03-12T23:02:45.336Z",
+  "model": "claude",
+  "slideCount": 5,
+  "slides": [
+    "slide-1.html",
+    "slide-2.html",
+    "slide-3.html",
+    "slide-4.html",
+    "slide-5.html"
+  ],
+  "chatHistory": [],
+  "theme": "dark-tech",
+  "customThemeCss": null,
+  "generatedAt": "2026-03-12T23:04:51.820Z"
+}

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin:0; background:#0a0a0a; font-family:'Segoe UI',Arial,sans-serif; color:#e0e0e0; }
+    .slide { width:1280px; height:720px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:80px; box-sizing:border-box; border-left:4px solid #4ade80; position:relative; overflow:hidden; }
+    h1 { font-size:56px; font-weight:700; margin:0 0 40px; color:#fff; line-height:1.1; }
+    h2 { font-size:32px; font-weight:600; margin:0 0 16px; color:#4ade80; }
+    p, li { font-size:22px; line-height:1.6; margin:8px 0; color:#ccc; }
+    .accent { color:#4ade80; }
+    .tag { background:#4ade8022; color:#4ade80; padding:4px 12px; border-radius:20px; font-size:18px; border:1px solid #4ade8044; display:inline-block; margin-bottom:20px; }
+    
+    .content-wrapper { display:flex; gap:60px; width:100%; }
+    .left-content { flex:1; }
+    .right-visual { flex:1; display:flex; flex-direction:column; gap:40px; }
+    
+    .concept-box { background:#1a1a1a; border:1px solid #2a2a2a; border-radius:12px; padding:20px; margin-bottom:16px; }
+    .concept-box h3 { color:#4ade80; font-size:24px; margin:0 0 12px; }
+    .concept-box p { font-size:18px; line-height:1.5; margin:0; color:#bbb; }
+    
+    .comparison { display:flex; flex-direction:column; gap:30px; }
+    .model { background:#1a1a1a; border-radius:12px; padding:24px; border:1px solid #2a2a2a; }
+    .model-title { color:#4ade80; font-size:20px; font-weight:600; margin-bottom:16px; text-align:center; }
+    
+    .centralized { display:flex; flex-direction:column; align-items:center; }
+    .server { width:80px; height:80px; background:linear-gradient(135deg, #dc2626, #b91c1c); border-radius:12px; position:relative; box-shadow:0 0 20px #dc262644; }
+    .server::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:40px; height:40px; background:#fff; border-radius:4px; }
+    .clients { display:flex; gap:12px; margin-top:20px; }
+    .client { width:40px; height:40px; background:#4a5568; border-radius:50%; position:relative; }
+    .connection-line { width:2px; height:30px; background:#4ade8055; margin:0 auto; }
+    
+    .decentralized { display:flex; flex-wrap:wrap; gap:16px; justify-content:center; position:relative; }
+    .node { width:50px; height:50px; background:linear-gradient(135deg, #4ade80, #22c55e); border-radius:50%; position:relative; box-shadow:0 0 15px #4ade8044; }
+    .node::after { content:''; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:20px; height:20px; background:#fff; border-radius:50%; }
+    .network-line { position:absolute; width:2px; height:60px; background:#4ade8033; transform:rotate(45deg); top:20px; left:50%; }
+    
+    .analogy { background:#4ade8011; border-left:3px solid #4ade80; padding:16px; border-radius:4px; margin-top:20px; font-style:italic; font-size:18px; color:#4ade80; }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <span class="tag">SLIDE 4/5</span>
+    <h1>La Nueva Era: Descentralización y Propiedad</h1>
+    
+    <div class="content-wrapper">
+      <div class="left-content">
+        <div class="concept-box">
+          <h3>🔗 Blockchain</h3>
+          <p>Red distribuida de nodos donde cada transacción es verificada por múltiples participantes, creando un registro inmutable y transparente.</p>
+        </div>
+        
+        <div class="analogy">
+          💡 Como un libro contable público que nadie puede borrar ni modificar
+        </div>
+        
+        <div class="concept-box" style="margin-top:20px;">
+          <h3>⚡ Descentralización</h3>
+          <p><span class="accent">✓</span> Eliminación de intermediarios<br>
+          <span class="accent">✓</span> Usuarios controlan sus datos y activos<br>
+          <span class="accent">✓</span> Poder distribuido en la red</p>
+        </div>
+      </div>
+      
+      <div class="right-visual">
+        <div class="comparison">
+          <div class="model">
+            <div class="model-title">❌ Modelo Centralizado</div>
+            <div class="centralized">
+              <div class="server"></div>
+              <div class="connection-line"></div>
+              <div class="clients">
+                <div class="client"></div>
+                <div class="client"></div>
+                <div class="client"></div>
+                <div class="client"></div>
+              </div>
+            </div>
+            <p style="text-align:center; font-size:16px; margin-top:12px; color:#888;">Punto único de control</p>
+          </div>
+          
+          <div class="model">
+            <div class="model-title">✓ Red Blockchain</div>
+            <div class="decentralized">
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+              <div class="node"></div>
+            </div>
+            <p style="text-align:center; font-size:16px; margin-top:12px; color:#4ade80;">Poder distribuido</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin:0; background:#0a0a0a; font-family:'Segoe UI',Arial,sans-serif; color:#e0e0e0; }
+    .slide { width:1280px; height:720px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; padding:60px 80px; box-sizing:border-box; border-left:4px solid #4ade80; position:relative; overflow:hidden; }
+    h1 { font-size:56px; font-weight:700; margin:0 0 40px; color:#fff; line-height:1.1; }
+    .accent { color:#4ade80; }
+    
+    .content-grid { display:grid; grid-template-columns:1fr 1fr; gap:40px; width:100%; margin-bottom:30px; }
+    
+    .use-case { background:#1a1a1a; border-radius:16px; padding:32px; border:2px solid #2a2a2a; position:relative; }
+    .use-case::before { content:''; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg, #4ade80, #22d3ee); border-radius:16px 16px 0 0; }
+    
+    .case-header { display:flex; align-items:center; gap:20px; margin-bottom:24px; }
+    .icon { width:64px; height:64px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:36px; background:linear-gradient(135deg, #4ade8033, #22d3ee33); border:2px solid #4ade8055; }
+    
+    h2 { font-size:38px; font-weight:600; margin:0; color:#4ade80; }
+    
+    .case-item { margin:16px 0; padding-left:20px; border-left:3px solid #4ade8044; }
+    .case-title { font-size:24px; font-weight:600; color:#22d3ee; margin-bottom:8px; }
+    .case-desc { font-size:20px; line-height:1.5; color:#aaa; margin:4px 0; }
+    
+    .conclusion { background:linear-gradient(135deg, #4ade8011, #22d3ee11); border-radius:16px; padding:28px 36px; border:2px solid #4ade8033; margin-top:10px; }
+    .conclusion-text { font-size:24px; font-weight:500; color:#fff; margin:0; line-height:1.5; }
+    .conclusion-text .highlight { color:#4ade80; font-weight:600; }
+    
+    .visual-icons { position:absolute; bottom:30px; right:60px; display:flex; gap:20px; opacity:0.15; }
+    .visual-icon { font-size:80px; filter:drop-shadow(0 0 20px #4ade80); }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <h1>Aplicaciones Reales del <span class="accent">Futuro Descentralizado</span></h1>
+    
+    <div class="content-grid">
+      <div class="use-case">
+        <div class="case-header">
+          <div class="icon">₿</div>
+          <h2>Criptomonedas</h2>
+        </div>
+        <div class="case-item">
+          <div class="case-title">Bitcoin</div>
+          <div class="case-desc">• Oro digital</div>
+          <div class="case-desc">• Primera blockchain (2009)</div>
+        </div>
+        <div class="case-item">
+          <div class="case-title">Ethereum</div>
+          <div class="case-desc">• Contratos inteligentes</div>
+          <div class="case-desc">• Apps descentralizadas (dApps)</div>
+        </div>
+        <div class="case-item">
+          <div class="case-desc" style="color:#4ade80; font-weight:500; margin-top:16px;">💰 Dinero sin bancos ni fronteras</div>
+        </div>
+      </div>
+      
+      <div class="use-case">
+        <div class="case-header">
+          <div class="icon">🎨</div>
+          <h2>NFTs</h2>
+        </div>
+        <div class="case-item">
+          <div class="case-title">Tokens Únicos</div>
+          <div class="case-desc">• En blockchain</div>
+          <div class="case-desc">• Certificado digital de propiedad</div>
+        </div>
+        <div class="case-item">
+          <div class="case-title">Revolucionando</div>
+          <div class="case-desc">🖼️ Arte digital</div>
+          <div class="case-desc">🎮 Gaming & coleccionables</div>
+          <div class="case-desc">📜 Derechos de autor</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="conclusion">
+      <p class="conclusion-text">
+        <span class="highlight">Web 3.0</span> devuelve el <span class="highlight">control a los usuarios</span>, resolviendo la centralización de Web 2.0
+      </p>
+    </div>
+    
+    <div class="visual-icons">
+      <div class="visual-icon">₿</div>
+      <div class="visual-icon">Ξ</div>
+      <div class="visual-icon">🎨</div>
+    </div>
+  </div>
+</body>
+</html>
