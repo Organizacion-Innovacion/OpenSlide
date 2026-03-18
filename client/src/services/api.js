@@ -1,4 +1,4 @@
-const BASE = '/api'
+const BASE = '/openslide/api'
 
 export const getProjects = () => fetch(`${BASE}/projects`).then(r => r.json())
 export const getProject = (slug) => fetch(`${BASE}/projects/${slug}`).then(r => r.json())

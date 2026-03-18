@@ -7,7 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
-      - ALLOWED_ORIGINS=http://localhost,http://localhost:80
+      - ALLOWED_ORIGINS=http://localhost,http://localhost:80,https://nogal2.uninorte.edu.co
     volumes:
       - ./slides:/app/slides
       - ./config:/app/config
@@ -27,14 +27,17 @@ services:
       dockerfile: Dockerfile
     container_name: openslide-client
     ports:
-      - "80:80"
+      - "80:80"          # opcional: mantener para debug directo
     depends_on:
       server:
         condition: service_healthy
     networks:
       - openslide-net
+      - nogal2-shared    # ← NUEVO
     restart: unless-stopped
 
 networks:
   openslide-net:
     driver: bridge
+  nogal2-shared:         # ← NUEVO
+    external: true

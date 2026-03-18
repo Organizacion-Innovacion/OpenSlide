@@ -11,4 +11,4 @@ export const router = createBrowserRouter([
   { path: '/viewer/:slug', element: <Viewer /> },
   { path: '/settings', element: <Settings /> },
   { path: '/edit/:slug', element: <EditProject /> },
-])
+], { basename: '/openslide' })

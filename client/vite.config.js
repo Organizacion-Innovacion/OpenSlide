@@ -3,19 +3,21 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/openslide/',
   server: {
-    host: true,   // equivale a --host: escucha en 0.0.0.0 para acceso desde red
+    host: true,
     proxy: {
-      '/api': {
+      '/openslide/api': {
         target: 'http://localhost:3001',
         changeOrigin: true,
-        // Timeout extendido para PDF/PPTX (puppeteer puede tardar varios minutos en proyectos grandes)
+        rewrite: (path) => path.replace(/^\/openslide\/api/, '/api'),
         timeout: 300000,
         proxyTimeout: 300000,
       },
-      '/slides': {
+      '/openslide/slides': {
         target: 'http://localhost:3001',
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/openslide\/slides/, '/slides'),
       },
     },
   },
