@@ -7,6 +7,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3001
+      - HOST=0.0.0.0
       - ALLOWED_ORIGINS=http://localhost,http://localhost:80,https://nogal2.uninorte.edu.co
     volumes:
       - ./slides:/app/slides
