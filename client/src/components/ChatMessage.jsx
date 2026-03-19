@@ -4,25 +4,31 @@ export default function ChatMessage({ message }) {
     <div style={{
       display: 'flex',
       justifyContent: isAssistant ? 'flex-start' : 'flex-end',
-      marginBottom: 16
+      marginBottom: 14,
+      animation: 'fadeIn 0.2s ease',
     }}>
       {isAssistant && (
         <div style={{
-          width: 32, height: 32, borderRadius: '50%',
-          background: 'linear-gradient(135deg,#1B5E20,#4CAF50)',
+          width: 28, height: 28, borderRadius: '50%',
+          background: 'var(--accent)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 14, marginRight: 10, flexShrink: 0, marginTop: 2
-        }}>▶</div>
+          fontSize: 12, marginRight: 10, flexShrink: 0, marginTop: 2,
+          color: '#fff', fontWeight: 700,
+        }}>
+          OS
+        </div>
       )}
       <div style={{
-        maxWidth: '70%',
-        padding: '12px 16px',
-        borderRadius: isAssistant ? '4px 16px 16px 16px' : '16px 4px 16px 16px',
-        background: isAssistant ? '#151515' : '#1B5E2033',
-        border: `1px solid ${isAssistant ? '#222' : '#1B5E2066'}`,
-        color: '#ddd',
-        fontSize: 14,
+        maxWidth: '72%',
+        padding: '10px 14px',
+        borderRadius: isAssistant ? '4px 14px 14px 14px' : '14px 4px 14px 14px',
+        background: isAssistant ? 'var(--surface)' : 'var(--accent)',
+        border: isAssistant ? '1px solid var(--border)' : 'none',
+        color: isAssistant ? 'var(--text)' : '#ffffff',
+        fontSize: 13,
         lineHeight: 1.6,
+        fontWeight: 400,
+        boxShadow: '0 1px 3px var(--shadow)',
       }}>
         {message.content}
         {message.extra && <div style={{ marginTop: 10 }}>{message.extra}</div>}

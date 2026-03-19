@@ -1,21 +1,11 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const ACCENT_COLORS = [
-  { from: '#1B5E20', to: '#4CAF50' },
-  { from: '#0D47A1', to: '#2196F3' },
-  { from: '#4A148C', to: '#9C27B0' },
-  { from: '#B71C1C', to: '#F44336' },
-  { from: '#E65100', to: '#FF9800' },
-  { from: '#006064', to: '#00BCD4' },
-]
-
-const PREVIEW_W = 260
+const PREVIEW_W = 280
 const PREVIEW_H = Math.round(PREVIEW_W * (9 / 16))
 const PREVIEW_SCALE = PREVIEW_W / 1280
 
-export default function ProjectCard({ project, colorIndex, onDelete }) {
-  const { from, to } = ACCENT_COLORS[colorIndex % ACCENT_COLORS.length]
+export default function ProjectCard({ project, onDelete }) {
   const [hovered, setHovered] = useState(false)
   const navigate = useNavigate()
 
@@ -33,37 +23,38 @@ export default function ProjectCard({ project, colorIndex, onDelete }) {
         position: 'relative',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'center',
-        background: '#111',
-        border: `1px solid ${hovered ? `${from}80` : 'rgba(255,255,255,0.07)'}`,
-        borderRadius: 16,
-        padding: '0 0 20px',
+        background: 'var(--surface)',
+        border: `1px solid ${hovered ? 'var(--accent)' : 'var(--border)'}`,
+        borderRadius: 14,
+        padding: 0,
         cursor: 'pointer',
-        color: '#fff',
+        color: 'var(--text)',
         width: `${PREVIEW_W}px`,
         overflow: 'hidden',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-        transform: hovered ? 'translateY(-6px)' : 'translateY(0)',
+        transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease',
+        transform: hovered ? 'translateY(-4px)' : 'translateY(0)',
         boxShadow: hovered
-          ? `0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px ${from}60`
-          : '0 4px 24px rgba(0,0,0,0.4)',
+          ? '0 12px 32px var(--shadow-lg)'
+          : '0 2px 8px var(--shadow)',
         textAlign: 'left',
+        fontFamily: 'inherit',
       }}
     >
-      {/* Barra de color superior */}
-      <div style={{
-        width: '100%', height: 4,
-        position: 'absolute', top: 0, left: 0,
-        background: `linear-gradient(to right, ${from}, ${to})`
-      }} />
-
-      {/* Botón eliminar (hover) */}
+      {/* Botón eliminar */}
       {hovered && onDelete && (
         <button
           onClick={(e) => { e.stopPropagation(); onDelete() }}
-          style={{ position: 'absolute', top: 10, right: 10, zIndex: 30, background: 'rgba(244,67,54,0.15)', border: '1px solid rgba(244,67,54,0.4)', color: '#f44336', borderRadius: 8, padding: '4px 10px', cursor: 'pointer', fontSize: 12, fontWeight: 700 }}
+          style={{
+            position: 'absolute', top: 10, right: 10, zIndex: 30,
+            background: 'rgba(220,38,38,0.1)',
+            border: '1px solid rgba(220,38,38,0.3)',
+            color: 'var(--danger)',
+            borderRadius: 8, padding: '4px 10px',
+            cursor: 'pointer', fontSize: 11, fontWeight: 600,
+            fontFamily: 'inherit',
+          }}
         >
-          🗑
+          Eliminar
         </button>
       )}
 
@@ -71,9 +62,9 @@ export default function ProjectCard({ project, colorIndex, onDelete }) {
       <div style={{
         position: 'relative', width: '100%',
         height: `${PREVIEW_H}px`, overflow: 'hidden',
-        marginTop: 4, flexShrink: 0,
+        background: '#18181C', flexShrink: 0,
       }}>
-        {firstSlide && (
+        {firstSlide ? (
           <iframe
             src={firstSlide}
             title={`Preview ${project.name}`}
@@ -87,48 +78,42 @@ export default function ProjectCard({ project, colorIndex, onDelete }) {
               pointerEvents: 'none',
             }}
           />
+        ) : (
+          <div style={{
+            width: '100%', height: '100%',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: '#555', fontSize: 11,
+          }}>
+            Sin previsualización
+          </div>
         )}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 2,
-          background: hovered
-            ? `linear-gradient(to bottom, transparent 60%, ${from}55)`
-            : 'linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.55))',
-          transition: 'background 0.3s ease',
+          background: 'linear-gradient(to bottom, transparent 55%, rgba(0,0,0,0.45))',
         }} />
         <div style={{
-          position: 'absolute', bottom: 8, right: 10, zIndex: 3,
-          fontSize: 11, fontWeight: 700,
-          padding: '3px 8px', borderRadius: 6,
-          background: `${from}cc`, color: '#fff',
+          position: 'absolute', bottom: 8, left: 12, zIndex: 3,
+          fontSize: 10, fontWeight: 600,
+          padding: '3px 8px', borderRadius: 5,
+          background: 'rgba(0,0,0,0.55)', color: 'rgba(255,255,255,0.85)',
+          backdropFilter: 'blur(4px)',
         }}>
-          {slideCount} slides
+          {slideCount} {slideCount === 1 ? 'slide' : 'slides'}
         </div>
       </div>
 
       {/* Info */}
-      <div style={{ padding: '14px 18px 0', width: '100%', boxSizing: 'border-box' }}>
+      <div style={{ padding: '14px 16px 16px', width: '100%', boxSizing: 'border-box' }}>
         <p style={{
-          fontSize: 15, fontWeight: 600, color: '#eee',
+          fontSize: 13, fontWeight: 600, color: 'var(--text)',
           margin: '0 0 4px', textTransform: 'capitalize',
-          wordBreak: 'break-word', lineHeight: 1.3,
+          wordBreak: 'break-word', lineHeight: 1.4,
         }}>
           {project.name.replace(/-/g, ' ')}
         </p>
-        <p style={{ fontSize: 12, color: '#555', margin: 0 }}>
+        <p style={{ fontSize: 11, color: 'var(--text3)', margin: 0, fontWeight: 500 }}>
           {slideCount} {slideCount === 1 ? 'diapositiva' : 'diapositivas'}
         </p>
-      </div>
-
-      {/* CTA */}
-      <div style={{
-        marginTop: 16, padding: '7px 20px', borderRadius: 20,
-        border: `1px solid ${hovered ? 'transparent' : '#2a2a2a'}`,
-        fontSize: 12, fontWeight: 600,
-        background: hovered ? `linear-gradient(to right, ${from}, ${to})` : '#1a1a1a',
-        color: hovered ? '#fff' : '#555',
-        transition: 'background 0.2s, color 0.2s',
-      }}>
-        {hovered ? 'Abrir presentación →' : 'Seleccionar'}
       </div>
     </button>
   )

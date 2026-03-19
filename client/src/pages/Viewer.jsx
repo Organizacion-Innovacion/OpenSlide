@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getProject, regenerateSlide, exportProject, exportProjectPDF, exportProjectPPTX } from '../services/api'
+import { getProject, regenerateSlide } from '../services/api'
 
 export default function Viewer() {
   const { slug } = useParams()
@@ -24,15 +24,31 @@ export default function Viewer() {
   }
 
   if (loading) return (
-    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <span style={{ color: '#555' }}>Cargando…</span>
+    <div style={{
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      height: '100vh', background: '#09090C',
+      fontFamily: "'Montserrat', sans-serif",
+    }}>
+      <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>Cargando…</span>
     </div>
   )
 
   if (error || !project) return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#080808' }}>
-      <p style={{ color: '#ccc' }}>Proyecto no encontrado</p>
-      <button onClick={() => navigate('/')} style={{ marginTop: 16, padding: '8px 16px', borderRadius: 8, border: '1px solid #222', background: '#111', color: '#aaa', cursor: 'pointer' }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+      height: '100vh', background: '#09090C',
+      fontFamily: "'Montserrat', sans-serif", gap: 16,
+    }}>
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>Proyecto no encontrado</p>
+      <button
+        onClick={() => navigate('/')}
+        style={{
+          padding: '8px 18px', borderRadius: 8,
+          border: '1px solid rgba(255,255,255,0.12)',
+          background: 'transparent', color: 'rgba(255,255,255,0.5)',
+          cursor: 'pointer', fontSize: 13, fontFamily: 'inherit', fontWeight: 600,
+        }}
+      >
         ← Volver
       </button>
     </div>
@@ -49,14 +65,11 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
   const [fsSize, setFsSize] = useState(null)
   const [scale, setScale] = useState(1)
   const [reloadKey, setReloadKey] = useState(0)
-  const [regenerating, setRegenerating] = useState(false)
-
-  // Modal de regeneración
   const [regenModal, setRegenModal] = useState(false)
   const [regenInstructions, setRegenInstructions] = useState('')
   const [regenLoading, setRegenLoading] = useState(false)
   const [exportMenuOpen, setExportMenuOpen] = useState(false)
-  const [exportingFormat, setExportingFormat] = useState(null) // 'pdf' | 'pptx' | 'zip' | null
+  const [exportingFormat, setExportingFormat] = useState(null)
 
   const wrapperRef     = useRef(null)
   const rootRef        = useRef(null)
@@ -68,6 +81,17 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
 
   const totalSlides = project.slides.length
   const slideSrc = `/slides/${project.slug}/${project.slides[current - 1]}`
+  const progress = ((current - 1) / Math.max(totalSlides - 1, 1)) * 100
+
+  const prev = useCallback(() => setCurrent((n) => Math.max(1, n - 1)), [])
+  const next = useCallback(() => setCurrent((n) => Math.min(totalSlides, n + 1)), [totalSlides])
+
+  const enterFullscreen = useCallback(() => rootRef.current?.requestFullscreen?.(), [])
+  const exitFullscreen  = useCallback(() => document.exitFullscreen?.(), [])
+  const toggleFullscreen = useCallback(
+    () => (document.fullscreenElement ? exitFullscreen() : enterFullscreen()),
+    [enterFullscreen, exitFullscreen]
+  )
 
   const handleRegen = async () => {
     setRegenLoading(true)
@@ -88,29 +112,13 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     }
   }
 
-  const handleRegenerateSlide = () => {
-    setRegenInstructions('')
-    setRegenModal(true)
-  }
-  const progress = ((current - 1) / Math.max(totalSlides - 1, 1)) * 100
-
-  const prev = useCallback(() => setCurrent((n) => Math.max(1, n - 1)), [])
-  const next = useCallback(() => setCurrent((n) => Math.min(totalSlides, n + 1)), [totalSlides])
-
-  const enterFullscreen = useCallback(() => rootRef.current?.requestFullscreen?.(), [])
-  const exitFullscreen  = useCallback(() => document.exitFullscreen?.(), [])
-  const toggleFullscreen = useCallback(
-    () => (document.fullscreenElement ? exitFullscreen() : enterFullscreen()),
-    [enterFullscreen, exitFullscreen]
-  )
-
   const handleExport = async (format) => {
     setExportingFormat(format)
     try {
       const urlMap = {
-        pdf:  `/api/projects/${project.slug}/export/pdf`,
-        pptx: `/api/projects/${project.slug}/export/pptx`,
-        zip:  `/api/projects/${project.slug}/export`,
+        pdf:  `/openslide/api/projects/${project.slug}/export/pdf`,
+        pptx: `/openslide/api/projects/${project.slug}/export/pptx`,
+        zip:  `/openslide/api/projects/${project.slug}/export`,
       }
       const extMap = { pdf: 'pdf', pptx: 'pptx', zip: 'zip' }
 
@@ -143,7 +151,6 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     onBack()
   }, [onBack])
 
-  // Auto-hide para controles fullscreen
   const revealControls = useCallback(() => {
     const el = controlsRef.current
     if (!el) return
@@ -157,7 +164,6 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     }, 3000)
   }, [])
 
-  // Auto-hide para barra superior en modo normal
   const revealTopBar = useCallback(() => {
     const el = topBarRef.current
     if (!el) return
@@ -179,12 +185,8 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
     clearTimeout(hideTimerRef.current)
   }, [isFullscreen, revealControls])
 
-  // Mostrar la barra superior al montar
-  useEffect(() => {
-    revealTopBar()
-  }, [revealTopBar])
+  useEffect(() => { revealTopBar() }, [revealTopBar])
 
-  // Scale correcto: considera tanto ancho como alto
   useEffect(() => {
     const update = () => {
       if (document.fullscreenElement) {
@@ -194,11 +196,9 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
       } else {
         setFsSize(null)
         const availW = window.innerWidth
-        const reservedH = 120 // barra inferior: dots + thumbnails + margen
+        const reservedH = 110
         const availH = window.innerHeight - reservedH
-        const scW = availW / 1280
-        const scH = availH / 720
-        const sc = Math.min(scW, scH, 1) // nunca mayor que 1:1
+        const sc = Math.min(availW / 1280, availH / 720, 1)
         setScale(sc > 0 ? sc : 1)
       }
     }
@@ -264,24 +264,30 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         userSelect: 'none',
         width: `${fsSize.w}px`, height: `${fsSize.h}px`,
         maxWidth: '100vw', maxHeight: '100vh',
-        flexShrink: 0,
-        borderRadius: 0, boxShadow: 'none', cursor: 'default',
+        flexShrink: 0, borderRadius: 0, boxShadow: 'none', cursor: 'default',
       }
     : {
         position: 'relative', overflow: 'hidden', background: '#fff',
         userSelect: 'none',
-        width: `${1280 * scale}px`,
-        height: `${720 * scale}px`,
+        width: `${1280 * scale}px`, height: `${720 * scale}px`,
         maxWidth: '100vw',
         cursor: hint === 'prev' ? 'w-resize' : hint === 'next' ? 'e-resize' : 'default',
-        borderRadius: 8, boxShadow: '0 16px 60px rgba(0,0,0,0.8)',
+        borderRadius: 8,
+        boxShadow: '0 20px 70px rgba(0,0,0,0.7)',
         flexShrink: 0,
       }
 
-  const btnStyle = {
-    padding: '10px 22px', background: '#151515', color: '#ccc',
-    border: '1px solid #222', borderRadius: 8, cursor: 'pointer',
-    fontSize: 14, fontWeight: 600,
+  // Estilos de botones de chrome
+  const btnChrome = {
+    padding: '7px 14px',
+    background: 'rgba(255,255,255,0.07)',
+    color: 'rgba(255,255,255,0.65)',
+    border: '1px solid rgba(255,255,255,0.1)',
+    borderRadius: 7, cursor: 'pointer',
+    fontSize: 12, fontWeight: 600,
+    fontFamily: "'Montserrat', sans-serif",
+    backdropFilter: 'blur(8px)',
+    transition: 'background 0.15s',
   }
 
   return (
@@ -293,92 +299,104 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center',
         width: isFullscreen ? '100vw' : '100%',
-        height: isFullscreen ? '100vh' : '100vh',
+        height: '100vh',
         overflow: 'hidden',
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        background: isFullscreen ? '#000' : '#0a0a0a',
+        fontFamily: "'Montserrat', sans-serif",
+        background: isFullscreen ? '#000' : '#09090C',
         boxSizing: 'border-box',
       }}
     >
-      {/* Progress bar — absoluta, arriba de todo, solo en modo normal */}
+      {/* Progress bar */}
       <div style={{
         position: 'absolute', top: 0, left: 0, right: 0, zIndex: 40,
-        height: 3, background: '#151515',
+        height: 2, background: 'rgba(255,255,255,0.06)',
         display: isFullscreen ? 'none' : 'block',
       }}>
-        <div style={{ height: '100%', width: `${progress}%`, background: 'linear-gradient(to right, #1B5E20, #4CAF50)', transition: 'width 0.35s ease' }} />
+        <div style={{
+          height: '100%', width: `${progress}%`,
+          background: 'var(--accent)',
+          transition: 'width 0.35s ease',
+        }} />
       </div>
 
-      {/* Top bar — overlay auto-hide en modo normal */}
+      {/* Top bar */}
       <div
         ref={topBarRef}
         style={{
           position: 'absolute', top: 0, left: 0, right: 0, zIndex: 30,
           display: isFullscreen ? 'none' : 'flex',
-          alignItems: 'center', gap: 12, padding: '10px 16px',
-          background: 'linear-gradient(to bottom, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)',
+          alignItems: 'center', gap: 8, padding: '12px 16px',
+          background: 'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
           transition: 'opacity 0.4s ease',
           boxSizing: 'border-box',
         }}
       >
-        <button onClick={handleBack} style={{ ...btnStyle, padding: '7px 16px', fontSize: 13, color: '#aaa' }}>
-          ← Proyectos
-        </button>
+        <button onClick={handleBack} style={btnChrome}>← Proyectos</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flex: 1 }}>
-          <span style={{ color: '#aaa', fontSize: 13, textTransform: 'capitalize' }}>{project.name.replace(/-/g, ' ')}</span>
-          <span style={{ color: '#555', fontSize: 13 }}>›</span>
-          <span style={{ color: '#888', fontSize: 13 }}>Slide {current}</span>
+          <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 12, fontWeight: 500, textTransform: 'capitalize' }}>
+            {project.name.replace(/-/g, ' ')}
+          </span>
+          <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 12 }}>›</span>
+          <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Slide {current}</span>
         </div>
         <button
           onClick={() => navigate(`/edit/${project.slug}`)}
-          style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#2196F3', borderColor: '#0D47A1' }}
+          style={{ ...btnChrome, color: 'rgba(120,170,255,0.8)', borderColor: 'rgba(77,124,246,0.3)' }}
         >
-          ✏️ Editar con IA
+          Editar con IA
         </button>
         <div style={{ position: 'relative' }}>
           <button
             onClick={() => !exportingFormat && setExportMenuOpen(!exportMenuOpen)}
             disabled={!!exportingFormat}
-            style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: exportingFormat ? '#4CAF50' : '#888', borderColor: exportingFormat ? '#1B5E20' : '#333' }}
+            style={{
+              ...btnChrome,
+              color: exportingFormat ? 'rgba(74,222,128,0.8)' : 'rgba(255,255,255,0.55)',
+              borderColor: exportingFormat ? 'rgba(74,222,128,0.3)' : 'rgba(255,255,255,0.1)',
+            }}
           >
-            {exportingFormat ? `⏳ Generando ${exportingFormat.toUpperCase()}...` : '⬇ Exportar ▾'}
+            {exportingFormat ? `Generando ${exportingFormat.toUpperCase()}...` : 'Exportar ▾'}
           </button>
           {exportMenuOpen && !exportingFormat && (
             <div style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: 4,
-              background: '#111', border: '1px solid #222', borderRadius: 10,
-              padding: 6, zIndex: 100, minWidth: 220,
+              position: 'absolute', top: '100%', right: 0, marginTop: 6,
+              background: 'rgba(20,20,28,0.95)', backdropFilter: 'blur(16px)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 10, padding: 5, zIndex: 100, minWidth: 200,
             }}>
               {[
-                { label: '📄 PDF', fmt: 'pdf', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pdf') } },
-                { label: '📊 PowerPoint (.pptx)', fmt: 'pptx', note: '~20-60s', action: () => { setExportMenuOpen(false); handleExport('pptx') } },
-                { label: '📦 ZIP (HTMLs)', fmt: 'zip', note: 'Inmediato', action: () => { setExportMenuOpen(false); handleExport('zip') } },
+                { label: 'PDF', fmt: 'pdf', note: '~20-60s' },
+                { label: 'PowerPoint (.pptx)', fmt: 'pptx', note: '~20-60s' },
+                { label: 'ZIP (HTMLs)', fmt: 'zip', note: 'Inmediato' },
               ].map(item => (
-                <button key={item.label} onClick={item.action} style={{
-                  display: 'flex', width: '100%', alignItems: 'center', justifyContent: 'space-between',
-                  padding: '8px 12px', borderRadius: 7, border: 'none',
-                  background: 'none', color: '#ccc', cursor: 'pointer', fontSize: 13, textAlign: 'left',
-                  boxSizing: 'border-box',
-                }}
-                  onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
+                <button
+                  key={item.fmt}
+                  onClick={() => { setExportMenuOpen(false); handleExport(item.fmt) }}
+                  style={{
+                    display: 'flex', width: '100%', alignItems: 'center',
+                    justifyContent: 'space-between', padding: '8px 12px',
+                    borderRadius: 7, border: 'none', background: 'none',
+                    color: 'rgba(255,255,255,0.65)', cursor: 'pointer',
+                    fontSize: 12, fontFamily: 'inherit', fontWeight: 500,
+                  }}
+                  onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.07)'}
                   onMouseLeave={e => e.currentTarget.style.background = 'none'}
                 >
                   <span>{item.label}</span>
-                  <span style={{ color: '#333', fontSize: 11 }}>{item.note}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: 11 }}>{item.note}</span>
                 </button>
               ))}
             </div>
           )}
         </div>
         <button
-          onClick={handleRegenerateSlide}
-          disabled={regenerating}
-          style={{ ...btnStyle, padding: '7px 14px', fontSize: 13, color: '#4CAF50', borderColor: '#1B5E20', opacity: regenerating ? 0.6 : 1 }}
+          onClick={() => setRegenModal(true)}
+          style={{ ...btnChrome, color: 'rgba(74,222,128,0.7)', borderColor: 'rgba(74,222,128,0.25)' }}
         >
-          {regenerating ? '⏳ Regenerando...' : '↺ Regenerar slide'}
+          ↺ Regenerar
         </button>
-        <span style={{ color: '#666', fontSize: 13, fontWeight: 600 }}>
-          {current} <span style={{ color: '#444' }}>/</span> {totalSlides}
+        <span style={{ color: 'rgba(255,255,255,0.25)', fontSize: 12, fontWeight: 600, minWidth: 44, textAlign: 'right' }}>
+          {current}<span style={{ opacity: 0.4 }}>/</span>{totalSlides}
         </span>
       </div>
 
@@ -396,9 +414,9 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
           position: 'absolute', top: 0, left: 0, width: '20%', height: '100%', zIndex: 10,
           display: 'flex', alignItems: 'center', pointerEvents: 'none',
           opacity: hint === 'prev' ? 1 : 0, transition: 'opacity 0.2s ease',
-          background: 'linear-gradient(to right, rgba(0,0,0,0.4), transparent)',
+          background: 'linear-gradient(to right, rgba(0,0,0,0.35), transparent)',
         }}>
-          <span style={{ position: 'absolute', left: 16, color: '#fff', fontSize: 60, fontWeight: 'bold', lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}>‹</span>
+          <span style={{ position: 'absolute', left: 16, color: '#fff', fontSize: 56, fontWeight: 300, lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>‹</span>
         </div>
 
         {/* Zone right */}
@@ -406,9 +424,9 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
           position: 'absolute', top: 0, right: 0, width: '20%', height: '100%', zIndex: 10,
           display: 'flex', alignItems: 'center', justifyContent: 'flex-end', pointerEvents: 'none',
           opacity: hint === 'next' ? 1 : 0, transition: 'opacity 0.2s ease',
-          background: 'linear-gradient(to left, rgba(0,0,0,0.4), transparent)',
+          background: 'linear-gradient(to left, rgba(0,0,0,0.35), transparent)',
         }}>
-          <span style={{ position: 'absolute', right: 16, color: '#fff', fontSize: 60, fontWeight: 'bold', lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.6)' }}>›</span>
+          <span style={{ position: 'absolute', right: 16, color: '#fff', fontSize: 56, fontWeight: 300, lineHeight: 1, textShadow: '0 2px 12px rgba(0,0,0,0.5)' }}>›</span>
         </div>
 
         {/* FS button */}
@@ -418,23 +436,15 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
             title="Pantalla completa (F)"
             style={{
               position: 'absolute', top: 10, right: 10, zIndex: 20,
-              background: 'rgba(0,0,0,0.5)', color: '#fff',
-              border: '1px solid rgba(255,255,255,0.25)', borderRadius: 8,
-              padding: '5px 10px', cursor: 'pointer', fontSize: 18,
-              backdropFilter: 'blur(6px)', lineHeight: 1,
+              background: 'rgba(0,0,0,0.45)',
+              color: 'rgba(255,255,255,0.6)',
+              border: '1px solid rgba(255,255,255,0.15)',
+              borderRadius: 7, padding: '5px 9px',
+              cursor: 'pointer', fontSize: 14,
+              backdropFilter: 'blur(8px)',
+              fontFamily: 'inherit',
             }}
           >⛶</button>
-        )}
-
-        {/* Slide number overlay */}
-        {!isFullscreen && (
-          <div style={{
-            position: 'absolute', bottom: 10, right: 12, zIndex: 20,
-            color: 'rgba(255,255,255,0.4)', fontSize: 11, fontWeight: 600,
-            pointerEvents: 'none', textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-          }}>
-            {current}/{totalSlides}
-          </div>
         )}
 
         <iframe
@@ -450,67 +460,114 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         />
       </div>
 
-      {/* Normal controls — overlay en la parte baja */}
+      {/* Bottom controls */}
       {!isFullscreen && (
         <div style={{
           position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 30,
           display: 'flex', flexDirection: 'column', alignItems: 'center',
-          padding: '8px 16px 12px',
-          background: 'linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 100%)',
+          padding: '8px 16px 14px',
+          background: 'linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%)',
           boxSizing: 'border-box',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
-            <button onClick={prev} disabled={current === 1} style={{ ...btnStyle, opacity: current === 1 ? 0.3 : 1 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <button onClick={prev} disabled={current === 1} style={{ ...btnChrome, opacity: current === 1 ? 0.25 : 1 }}>
               ← Anterior
             </button>
 
-            <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
               {Array.from({ length: totalSlides }, (_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i + 1)}
                   style={{
-                    width: 10, height: 10, borderRadius: '50%', border: 'none',
+                    width: 8, height: 8, borderRadius: '50%', border: 'none',
                     cursor: 'pointer', padding: 0, flexShrink: 0,
-                    background: current === i + 1 ? '#4CAF50' : '#333',
+                    background: current === i + 1
+                      ? 'rgba(255,255,255,0.85)'
+                      : 'rgba(255,255,255,0.2)',
                     transform: current === i + 1 ? 'scale(1.5)' : 'scale(1)',
-                    boxShadow: current === i + 1 ? '0 0 8px #4CAF5088' : 'none',
-                    transition: 'transform 0.2s, background 0.2s, box-shadow 0.2s',
+                    transition: 'transform 0.2s, background 0.2s',
                   }}
                 />
               ))}
             </div>
 
-            <button onClick={next} disabled={current === totalSlides} style={{ ...btnStyle, opacity: current === totalSlides ? 0.3 : 1 }}>
+            <button onClick={next} disabled={current === totalSlides} style={{ ...btnChrome, opacity: current === totalSlides ? 0.25 : 1 }}>
               Siguiente →
             </button>
 
-            <button onClick={toggleFullscreen} style={{ ...btnStyle, color: '#666', fontSize: 13 }}>
-              ⛶ Pantalla completa
+            <button onClick={toggleFullscreen} style={{ ...btnChrome, color: 'rgba(255,255,255,0.4)' }}>
+              Pantalla completa
             </button>
           </div>
 
-          <p style={{ margin: '6px 0 0', color: '#444', fontSize: 11 }}>
-            Clic en los bordes · Flechas ⬅ ➡ · Deslizar · <kbd style={{ background: '#1a1a1a', color: '#555', padding: '1px 6px', borderRadius: 4, fontSize: 10, border: '1px solid #333' }}>F</kbd> fullscreen
+          <p style={{ margin: '6px 0 0', color: 'rgba(255,255,255,0.2)', fontSize: 10 }}>
+            Clic en los bordes · Flechas ← → · Deslizar · F fullscreen
           </p>
         </div>
       )}
 
       {/* Modal de regeneración */}
       {regenModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <div style={{ background: '#111', border: '1px solid #222', borderRadius: 16, padding: 28, width: 480 }}>
-            <h3 style={{ color: '#eee', margin: '0 0 16px', fontSize: 18 }}>Regenerar Slide {current}</h3>
+        <div style={{
+          position: 'fixed', inset: 0,
+          background: 'rgba(0,0,0,0.75)', zIndex: 1000,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          backdropFilter: 'blur(6px)',
+        }}>
+          <div style={{
+            background: 'var(--surface)',
+            border: '1px solid var(--border)',
+            borderRadius: 14, padding: 28, width: 460,
+            boxShadow: '0 24px 80px rgba(0,0,0,0.5)',
+          }}>
+            <h3 style={{
+              color: 'var(--text)', margin: '0 0 6px',
+              fontSize: 16, fontWeight: 700,
+            }}>
+              Regenerar Slide {current}
+            </h3>
+            <p style={{ color: 'var(--text3)', fontSize: 12, margin: '0 0 16px' }}>
+              Describe cómo quieres que sea este slide
+            </p>
             <textarea
               value={regenInstructions}
               onChange={e => setRegenInstructions(e.target.value)}
-              placeholder="Describe cómo quieres este slide..."
+              placeholder="Ej: Más visual, menos texto, con gráfico de barras..."
               rows={4}
-              style={{ width: '100%', background: '#0a0a0a', border: '1px solid #222', borderRadius: 10, padding: '10px 14px', color: '#eee', fontSize: 14, resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+              style={{
+                width: '100%', background: 'var(--surface2)',
+                border: '1px solid var(--border)',
+                borderRadius: 8, padding: '10px 14px',
+                color: 'var(--text)', fontSize: 13,
+                resize: 'vertical', outline: 'none',
+                boxSizing: 'border-box', fontFamily: 'inherit', fontWeight: 400,
+              }}
             />
-            <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
-              <button onClick={() => setRegenModal(false)} style={{ background: 'none', border: '1px solid #333', color: '#888', padding: '8px 18px', borderRadius: 8, cursor: 'pointer' }}>Cancelar</button>
-              <button onClick={handleRegen} disabled={regenLoading} style={{ background: 'linear-gradient(135deg,#1B5E20,#4CAF50)', color: '#fff', border: 'none', padding: '8px 18px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, opacity: regenLoading ? 0.5 : 1 }}>
+            <div style={{ display: 'flex', gap: 8, marginTop: 16, justifyContent: 'flex-end' }}>
+              <button
+                onClick={() => setRegenModal(false)}
+                style={{
+                  background: 'none', border: '1px solid var(--border)',
+                  color: 'var(--text2)', padding: '8px 18px',
+                  borderRadius: 8, cursor: 'pointer', fontSize: 13,
+                  fontFamily: 'inherit', fontWeight: 600,
+                }}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRegen}
+                disabled={regenLoading}
+                style={{
+                  background: 'var(--accent)', color: '#fff',
+                  border: 'none', padding: '8px 18px',
+                  borderRadius: 8, cursor: 'pointer',
+                  fontWeight: 600, fontSize: 13,
+                  opacity: regenLoading ? 0.6 : 1,
+                  fontFamily: 'inherit',
+                }}
+              >
                 {regenLoading ? 'Regenerando...' : '↺ Regenerar'}
               </button>
             </div>
@@ -518,31 +575,32 @@ function PresentationViewer({ project, onBack, onProjectRefresh }) {
         </div>
       )}
 
-      {/* Floating fullscreen controls */}
+      {/* Fullscreen floating controls */}
       {isFullscreen && (
         <div ref={controlsRef} style={{
           position: 'fixed', bottom: 28, left: '50%', transform: 'translateX(-50%)',
-          display: 'flex', alignItems: 'center', gap: 10,
-          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(16px)',
-          padding: '10px 20px', borderRadius: 50, border: '1px solid rgba(255,255,255,0.1)',
+          display: 'flex', alignItems: 'center', gap: 8,
+          background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(20px)',
+          padding: '10px 20px', borderRadius: 50,
+          border: '1px solid rgba(255,255,255,0.08)',
           zIndex: 200, opacity: 0, pointerEvents: 'none', transition: 'opacity 0.4s ease',
         }}>
-          <button onClick={handleBack} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '5px 11px', cursor: 'pointer', fontSize: 12 }}>
+          <button onClick={handleBack} style={{ background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>
             ☰
           </button>
-          <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.12)' }} />
-          <button onClick={prev} disabled={current === 1} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '6px 13px', cursor: 'pointer', fontSize: 15, fontWeight: 600, opacity: current === 1 ? 0.25 : 1 }}>←</button>
-          <div style={{ display: 'flex', gap: 7, alignItems: 'center' }}>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.1)' }} />
+          <button onClick={prev} disabled={current === 1} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '6px 12px', cursor: 'pointer', fontSize: 14, fontWeight: 600, opacity: current === 1 ? 0.2 : 1, fontFamily: 'inherit' }}>←</button>
+          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
             {Array.from({ length: totalSlides }, (_, i) => (
-              <button key={i} onClick={() => setCurrent(i + 1)} style={{ width: 10, height: 10, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0, background: current === i + 1 ? '#fff' : 'rgba(255,255,255,0.25)', transform: current === i + 1 ? 'scale(1.5)' : 'scale(1)', transition: 'transform 0.2s' }} />
+              <button key={i} onClick={() => setCurrent(i + 1)} style={{ width: 8, height: 8, borderRadius: '50%', border: 'none', cursor: 'pointer', padding: 0, background: current === i + 1 ? '#fff' : 'rgba(255,255,255,0.2)', transform: current === i + 1 ? 'scale(1.5)' : 'scale(1)', transition: 'transform 0.2s' }} />
             ))}
           </div>
-          <span style={{ color: '#fff', fontSize: 14, fontWeight: 600, minWidth: 40, textAlign: 'center' }}>
-            {current}<span style={{ opacity: 0.4 }}>/</span>{totalSlides}
+          <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: 600, minWidth: 40, textAlign: 'center' }}>
+            {current}<span style={{ opacity: 0.3 }}>/</span>{totalSlides}
           </span>
-          <button onClick={next} disabled={current === totalSlides} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '6px 13px', cursor: 'pointer', fontSize: 15, fontWeight: 600, opacity: current === totalSlides ? 0.25 : 1 }}>→</button>
-          <div style={{ width: 1, height: 20, background: 'rgba(255,255,255,0.12)' }} />
-          <button onClick={exitFullscreen} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.2)', borderRadius: 8, padding: '5px 11px', cursor: 'pointer', fontSize: 12 }}>✕ Salir</button>
+          <button onClick={next} disabled={current === totalSlides} style={{ background: 'transparent', color: '#fff', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '6px 12px', cursor: 'pointer', fontSize: 14, fontWeight: 600, opacity: current === totalSlides ? 0.2 : 1, fontFamily: 'inherit' }}>→</button>
+          <div style={{ width: 1, height: 18, background: 'rgba(255,255,255,0.1)' }} />
+          <button onClick={exitFullscreen} style={{ background: 'transparent', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 7, padding: '5px 10px', cursor: 'pointer', fontSize: 12, fontFamily: 'inherit' }}>Salir</button>
         </div>
       )}
     </div>

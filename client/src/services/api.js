@@ -10,17 +10,12 @@ export const createProject = (data) => fetch(`${BASE}/projects`, {
 export const deleteProject = (slug) => fetch(`${BASE}/projects/${slug}`, {
   method: 'DELETE'
 }).then(r => r.json())
-export const getSettings = () => fetch(`${BASE}/settings`).then(r => r.json())
-export const saveSettings = (data) => fetch(`${BASE}/settings`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(data)
-}).then(r => r.json())
-export const sendChat = async (messages, model, apiKey, slug = null) => {
+
+export const sendChat = async (messages, model, slug = null) => {
   const res = await fetch(`${BASE}/ai/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages, model, apiKey, slug })
+    body: JSON.stringify({ messages, model, slug })
   })
   if (!res.ok) {
     const text = await res.text()
@@ -30,18 +25,6 @@ export const sendChat = async (messages, model, apiKey, slug = null) => {
   }
   return res.json()
 }
-export const generateSlide = (context) => fetch(`${BASE}/ai/generate-slide`, {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify(context)
-}).then(r => r.json())
-
-export const validateKey = (model, apiKey) =>
-  fetch(`${BASE}/ai/validate-key`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ model, apiKey })
-  }).then(r => r.json())
 
 export const generatePresentation = (data) =>
   fetch(`${BASE}/ai/generate`, {
@@ -98,7 +81,7 @@ export function generatePresentationStream(data, callbacks) {
 
     reader.read().then(processChunk)
   }).catch(err => {
-    if (err.name === 'AbortError') return // Ignorar abortos intencionales
+    if (err.name === 'AbortError') return
     if (onFatal) onFatal({ message: err.message })
   })
 

@@ -12,26 +12,54 @@ function GenerationProgress({ plan, slidesStatus, statusMessage }) {
   const pct = total > 0 ? Math.round((done / total) * 100) : 0
 
   return (
-    <div style={{ background: '#0f0f0f', border: '1px solid #222', borderRadius: 12, padding: '20px 24px', minWidth: 320 }}>
+    <div style={{
+      background: 'var(--surface)',
+      border: '1px solid var(--border)',
+      borderRadius: 12,
+      padding: '18px 20px',
+      minWidth: 280,
+    }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: total > 0 ? 12 : 0 }}>
-        <div style={{ width: 12, height: 12, border: '2px solid #222', borderTop: '2px solid #4CAF50', borderRadius: '50%', animation: 'spin 0.8s linear infinite', flexShrink: 0 }} />
-        <span style={{ color: '#aaa', fontSize: 13, flex: 1 }}>{statusMessage || 'Iniciando...'}</span>
-        {total > 0 && <span style={{ color: '#4CAF50', fontSize: 13, fontWeight: 700 }}>{pct}%</span>}
+        <div style={{
+          width: 14, height: 14,
+          border: '2px solid var(--border)',
+          borderTop: '2px solid var(--accent)',
+          borderRadius: '50%',
+          animation: 'spin 0.8s linear infinite',
+          flexShrink: 0,
+        }} />
+        <span style={{ color: 'var(--text2)', fontSize: 13, flex: 1, fontWeight: 500 }}>
+          {statusMessage || 'Iniciando...'}
+        </span>
+        {total > 0 && (
+          <span style={{ color: 'var(--accent)', fontSize: 13, fontWeight: 700 }}>{pct}%</span>
+        )}
       </div>
       {total > 0 && (
         <>
-          <div style={{ background: '#1a1a1a', borderRadius: 4, height: 6, marginBottom: 14 }}>
-            <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(to right,#1B5E20,#4CAF50)', borderRadius: 4, transition: 'width 0.4s ease' }} />
+          <div style={{
+            background: 'var(--surface2)', borderRadius: 4, height: 4, marginBottom: 14,
+          }}>
+            <div style={{
+              width: `${pct}%`, height: '100%',
+              background: 'var(--accent)',
+              borderRadius: 4, transition: 'width 0.4s ease',
+            }} />
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {plan.map((content, i) => {
               const status = slidesStatus[i + 1] || 'pending'
-              const icon = { pending: '⏳', generating: '🔄', done: '✅', error: '❌' }[status]
+              const color = status === 'done' ? 'var(--success)' : status === 'error' ? 'var(--danger)' : 'var(--text3)'
+              const dot = status === 'done' ? '●' : status === 'generating' ? '◐' : '○'
               return (
                 <div key={i} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <span style={{ fontSize: 13 }}>{icon}</span>
-                  <span style={{ color: status === 'done' ? '#4CAF50' : status === 'error' ? '#f44336' : '#555', fontSize: 12, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    Slide {i + 1}: {content?.slice(0, 55)}{content?.length > 55 ? '...' : ''}
+                  <span style={{ fontSize: 10, color, flexShrink: 0 }}>{dot}</span>
+                  <span style={{
+                    color: status === 'done' ? 'var(--text2)' : status === 'error' ? 'var(--danger)' : 'var(--text3)',
+                    fontSize: 12, flex: 1, overflow: 'hidden',
+                    textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 400,
+                  }}>
+                    Slide {i + 1}: {content?.slice(0, 50)}{content?.length > 50 ? '...' : ''}
                   </span>
                 </div>
               )
@@ -54,18 +82,16 @@ function SlideCanvas({ slides, isGenerating }) {
 
   const selectedUrl = slides[selectedIdx] || null
 
-  // Auto-seleccionar el último slide generado
   useEffect(() => {
     if (slides.length > 0) setSelectedIdx(slides.length - 1)
   }, [slides.length])
 
-  // Calcular escala con ResizeObserver — usar Math.min para evitar overflow vertical
   useEffect(() => {
     if (!previewRef.current) return
     const el = previewRef.current
     const calc = () => {
       const { width, height } = el.getBoundingClientRect()
-      const padding = 32 // 16px cada lado
+      const padding = 32
       const availW = width - padding
       const availH = height - padding
       if (availW > 0 && availH > 0) {
@@ -78,7 +104,6 @@ function SlideCanvas({ slides, isGenerating }) {
     return () => ro.disconnect()
   }, [selectedUrl])
 
-  // Cargar código fuente
   useEffect(() => {
     if (view === 'code' && selectedUrl) {
       setCodeContent('')
@@ -97,23 +122,48 @@ function SlideCanvas({ slides, isGenerating }) {
   }
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: '#050505', overflow: 'hidden', minWidth: 0 }}>
+    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', background: 'var(--canvas-bg)', overflow: 'hidden', minWidth: 0 }}>
       {/* Header */}
-      <div style={{ padding: '10px 16px', borderBottom: '1px solid #111', display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
-        <span style={{ color: '#333', fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', flex: 1 }}>
+      <div style={{
+        padding: '8px 14px',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
+      }}>
+        <span style={{
+          color: 'rgba(255,255,255,0.25)', fontSize: 10, fontWeight: 600,
+          textTransform: 'uppercase', letterSpacing: '0.08em', flex: 1,
+        }}>
           Canvas {slides.length > 0 ? `· ${slides.length} slide${slides.length > 1 ? 's' : ''}` : ''}
         </span>
         {selectedUrl && (
           <>
-            <button onClick={() => setView('preview')} style={{ padding: '3px 10px', borderRadius: 5, border: 'none', background: view === 'preview' ? '#1B5E20' : '#111', color: view === 'preview' ? '#4CAF50' : '#444', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
-              Preview
-            </button>
-            <button onClick={() => setView('code')} style={{ padding: '3px 10px', borderRadius: 5, border: 'none', background: view === 'code' ? '#1a1a1a' : '#111', color: view === 'code' ? '#aaa' : '#444', cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
-              {'</>'} Código
-            </button>
+            {['preview', 'code'].map(v => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                style={{
+                  padding: '3px 10px', borderRadius: 5,
+                  border: 'none', cursor: 'pointer',
+                  background: view === v ? 'rgba(255,255,255,0.1)' : 'transparent',
+                  color: view === v ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.25)',
+                  fontSize: 11, fontWeight: 600, fontFamily: 'inherit',
+                }}
+              >
+                {v === 'preview' ? 'Preview' : '</> Código'}
+              </button>
+            ))}
             {view === 'code' && codeContent && (
-              <button onClick={handleCopy} style={{ padding: '3px 10px', borderRadius: 5, border: '1px solid #1e1e1e', background: 'none', color: copied ? '#4CAF50' : '#444', cursor: 'pointer', fontSize: 11 }}>
-                {copied ? '✓' : 'Copiar'}
+              <button
+                onClick={handleCopy}
+                style={{
+                  padding: '3px 10px', borderRadius: 5,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  background: 'none',
+                  color: copied ? '#4ADE80' : 'rgba(255,255,255,0.25)',
+                  cursor: 'pointer', fontSize: 11, fontFamily: 'inherit',
+                }}
+              >
+                {copied ? 'Copiado' : 'Copiar'}
               </button>
             )}
           </>
@@ -122,10 +172,14 @@ function SlideCanvas({ slides, isGenerating }) {
 
       {/* Body: lista de slides + preview */}
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
-
-        {/* Lista de slides (sidebar) */}
+        {/* Sidebar thumbnails */}
         {slides.length > 0 && (
-          <div style={{ width: 90, flexShrink: 0, overflowY: 'auto', borderRight: '1px solid #0e0e0e', background: '#030303', padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <div style={{
+            width: 88, flexShrink: 0, overflowY: 'auto',
+            borderRight: '1px solid rgba(255,255,255,0.05)',
+            background: 'rgba(0,0,0,0.3)',
+            padding: '8px 6px', display: 'flex', flexDirection: 'column', gap: 5,
+          }}>
             {slides.map((url, i) => (
               <button
                 key={url}
@@ -133,7 +187,9 @@ function SlideCanvas({ slides, isGenerating }) {
                 style={{
                   position: 'relative', width: '100%', aspectRatio: '16/9',
                   borderRadius: 5, overflow: 'hidden', border: 'none',
-                  outline: selectedIdx === i ? '2px solid #4CAF50' : '1px solid #1a1a1a',
+                  outline: selectedIdx === i
+                    ? '2px solid var(--accent)'
+                    : '1px solid rgba(255,255,255,0.06)',
                   cursor: 'pointer', background: '#111', padding: 0, flexShrink: 0,
                 }}
                 title={`Slide ${i + 1}`}
@@ -143,58 +199,100 @@ function SlideCanvas({ slides, isGenerating }) {
                   sandbox="allow-scripts allow-same-origin"
                   style={{ width: '1280px', height: '720px', border: 'none', transform: 'scale(0.0609)', transformOrigin: 'top left', pointerEvents: 'none' }}
                 />
-                {/* Animación pulsing en el último slide cuando se está generando */}
                 {isGenerating && i === slides.length - 1 && (
                   <div style={{
                     position: 'absolute', inset: 0,
-                    background: 'rgba(76,175,80,0.15)',
+                    background: 'rgba(77,124,246,0.15)',
                     animation: 'shimmer 1.5s ease-in-out infinite',
                   }} />
                 )}
-                <div style={{ position: 'absolute', bottom: 2, right: 4, color: selectedIdx === i ? '#4CAF50' : '#333', fontSize: 9, fontWeight: 700 }}>{i + 1}</div>
+                <div style={{
+                  position: 'absolute', bottom: 2, right: 4,
+                  color: selectedIdx === i ? 'var(--accent)' : 'rgba(255,255,255,0.2)',
+                  fontSize: 9, fontWeight: 700,
+                }}>
+                  {i + 1}
+                </div>
               </button>
             ))}
             {isGenerating && (
-              <div style={{ width: '100%', aspectRatio: '16/9', borderRadius: 5, border: '1px dashed #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <div style={{ width: 10, height: 10, border: '2px solid #1a1a1a', borderTop: '2px solid #4CAF50', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+              <div style={{
+                width: '100%', aspectRatio: '16/9', borderRadius: 5,
+                border: '1px dashed rgba(255,255,255,0.08)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+              }}>
+                <div style={{
+                  width: 10, height: 10,
+                  border: '2px solid rgba(255,255,255,0.1)',
+                  borderTop: '2px solid var(--accent)',
+                  borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+                }} />
               </div>
             )}
           </div>
         )}
 
-        {/* Preview / Code principal */}
-        <div ref={previewRef} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', minWidth: 0 }}>
+        {/* Main area */}
+        <div
+          ref={previewRef}
+          style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16, overflow: 'hidden', minWidth: 0 }}
+        >
           {!selectedUrl ? (
             <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🎨</div>
-              <p style={{ fontSize: 12, color: '#1e1e1e' }}>
+              <div style={{
+                width: 48, height: 48, borderRadius: 12,
+                background: 'rgba(255,255,255,0.04)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                margin: '0 auto 12px',
+              }}>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+              </div>
+              <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.15)', margin: 0 }}>
                 {isGenerating ? 'Generando slides...' : 'El canvas mostrará los slides aquí'}
               </p>
             </div>
           ) : view === 'preview' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <div style={{ position: 'relative', width: `${1280 * scale}px`, height: `${720 * scale}px`, background: '#111', borderRadius: 6, overflow: 'hidden', border: '1px solid #1a1a1a', boxShadow: '0 8px 40px rgba(0,0,0,0.8)', flexShrink: 0 }}>
+              <div style={{
+                position: 'relative',
+                width: `${1280 * scale}px`, height: `${720 * scale}px`,
+                background: '#111', borderRadius: 8, overflow: 'hidden',
+                border: '1px solid rgba(255,255,255,0.06)',
+                boxShadow: '0 16px 60px rgba(0,0,0,0.7)', flexShrink: 0,
+              }}>
                 <iframe
                   key={selectedUrl}
                   src={selectedUrl}
                   sandbox="allow-scripts allow-same-origin"
                   style={{ position: 'absolute', top: 0, left: 0, width: '1280px', height: '720px', border: 'none', transform: `scale(${scale})`, transformOrigin: 'top left', pointerEvents: 'none' }}
                 />
-                {/* Shimmer overlay cuando se está generando */}
                 {isGenerating && (
                   <div style={{
                     position: 'absolute', inset: 0,
-                    background: 'linear-gradient(135deg, rgba(76,175,80,0.06) 0%, rgba(76,175,80,0.02) 50%, rgba(76,175,80,0.06) 100%)',
+                    background: 'linear-gradient(135deg, rgba(77,124,246,0.05) 0%, transparent 50%, rgba(77,124,246,0.05) 100%)',
                     animation: 'shimmer 2s ease-in-out infinite',
                     pointerEvents: 'none',
                   }} />
                 )}
               </div>
-              <p style={{ color: '#1e1e1e', fontSize: 10, textAlign: 'center', margin: '6px 0 0' }}>Slide {selectedIdx + 1}</p>
+              <p style={{ color: 'rgba(255,255,255,0.15)', fontSize: 10, textAlign: 'center', margin: '6px 0 0' }}>
+                Slide {selectedIdx + 1}
+              </p>
             </div>
           ) : (
-            <div style={{ width: '100%', height: '100%', overflow: 'auto', background: '#0a0a0a', borderRadius: 6, border: '1px solid #1a1a1a' }}>
-              <pre style={{ margin: 0, padding: 16, color: '#6a9955', fontSize: 11, lineHeight: 1.6, fontFamily: 'monospace', whiteSpace: 'pre-wrap', wordBreak: 'break-all' }}>
+            <div style={{
+              width: '100%', height: '100%', overflow: 'auto',
+              background: '#0d0d10', borderRadius: 8,
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}>
+              <pre style={{
+                margin: 0, padding: 16, color: '#7AA2F7',
+                fontSize: 11, lineHeight: 1.6,
+                fontFamily: "'Courier New', monospace",
+                whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+              }}>
                 {codeContent || 'Cargando...'}
               </pre>
             </div>
@@ -239,26 +337,22 @@ Habla en español, sé amigable y profesional.`
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function NewProject() {
   const navigate = useNavigate()
-  const { model, setModel, setKey, keys } = useSettingsStore()
+  const { model, setModel } = useSettingsStore()
 
-  // Fases: 'model' → 'key' → 'chat' → 'generating' → 'done'
+  // Fases: 'model' → 'chat' → 'generating' → 'done'
   const [phase, setPhase] = useState('model')
   const [selectedModel, setSelectedModel] = useState(null)
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: '¡Hola! Soy OpenSlide. Para comenzar, ¿qué modelo de IA quieres usar?' }
+    { role: 'assistant', content: '¡Hola! Soy OpenSlide. Selecciona el modelo de IA que quieres usar para crear tu presentación.' }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [keyDraft, setKeyDraft] = useState('')
 
-  // Chat history para el LLM (incluye system prompt)
   const chatHistoryRef = useRef([{ role: 'system', content: SYSTEM_PROMPT }])
 
-  // Estado de generación
   const [genPlan, setGenPlan] = useState([])
   const [slidesStatus, setSlidesStatus] = useState({})
   const [genStatus, setGenStatus] = useState('')
-  const [currentPreviewUrl, setCurrentPreviewUrl] = useState(null)
   const [generatedSlides, setGeneratedSlides] = useState([])
   const [currentSlug, setCurrentSlug] = useState(null)
   const [isGenerating, setIsGenerating] = useState(false)
@@ -277,26 +371,9 @@ export default function NewProject() {
   const handleModelSelect = (m) => {
     setSelectedModel(m)
     setModel(m)
-    addMsg('user', m === 'openai' ? 'OpenAI GPT-4o' : m === 'claude' ? 'Claude Sonnet' : 'Gemini Flash')
-
-    const keyMap = { openai: keys.openai, claude: keys.anthropic, gemini: keys.gemini }
-    if (keyMap[m]) {
-      addMsg('assistant', `Perfecto. Tengo la key de ${m === 'openai' ? 'OpenAI' : m === 'claude' ? 'Claude' : 'Gemini'} guardada. ¡Cuéntame sobre tu presentación! ¿De qué trata?`)
-      setPhase('chat')
-    } else {
-      addMsg('assistant', `Para usar ${m === 'openai' ? 'OpenAI' : m === 'claude' ? 'Anthropic Claude' : 'Google Gemini'} necesito tu API key:`)
-      setPhase('key')
-    }
-  }
-
-  // ── Guardar key ────────────────────────────────────────────────────────────
-  const handleKeySave = async () => {
-    if (!keyDraft.trim()) return
-    const providerMap = { openai: 'openai', claude: 'anthropic', gemini: 'gemini' }
-    setKey(providerMap[selectedModel], keyDraft.trim())
-    addMsg('user', '****' + keyDraft.trim().slice(-4))
-    setKeyDraft('')
-    addMsg('assistant', `Key guardada. ¡Cuéntame sobre tu presentación! ¿De qué trata?`)
+    const labels = { openai: 'GPT-4o', claude: 'Claude Sonnet', gemini: 'Gemini Flash' }
+    addMsg('user', labels[m])
+    addMsg('assistant', `Perfecto, usaremos ${labels[m]}. ¡Cuéntame sobre tu presentación! ¿De qué trata?`)
     setPhase('chat')
   }
 
@@ -307,7 +384,6 @@ export default function NewProject() {
     setInput('')
     addMsg('user', userText)
 
-    // Agregar a historial — mantener system prompt + últimos 20 mensajes para no sobrepasar límites
     const newHistory = [...chatHistoryRef.current, { role: 'user', content: userText }]
     const systemMsg = newHistory.find(m => m.role === 'system')
     const rest = newHistory.filter(m => m.role !== 'system').slice(-20)
@@ -315,31 +391,28 @@ export default function NewProject() {
     setLoading(true)
 
     try {
-      const keyMap = { openai: keys.openai, claude: keys.anthropic, gemini: keys.gemini }
-      const apiKey = keyMap[selectedModel]
-
-      const response = await sendChat(chatHistoryRef.current, selectedModel, apiKey)
+      const response = await sendChat(chatHistoryRef.current, selectedModel)
       const assistantText = response.message || response.error || 'Sin respuesta'
 
-      // Agregar respuesta al historial
       chatHistoryRef.current = [...chatHistoryRef.current, { role: 'assistant', content: assistantText }]
 
-      // Detectar si el LLM quiere generar
       const generateMatch = assistantText.match(/<GENERATE>([\s\S]*?)<\/GENERATE>/i)
       if (generateMatch) {
         try {
           const genData = JSON.parse(generateMatch[1].trim())
-          // Mostrar texto sin el bloque JSON
           const displayText = assistantText.replace(/<GENERATE>[\s\S]*?<\/GENERATE>/i, '').trim()
           if (displayText) addMsg('assistant', displayText)
-          
-          // Mostrar botón de confirmación
-          addMsg('assistant', `¿Empezamos a generar?`, (
+
+          addMsg('assistant', `¿Empezamos a generar la presentación?`, (
             <button
               onClick={() => startGeneration(genData)}
-              style={{ marginTop: 10, padding: '10px 22px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#1B5E20,#4CAF50)', color: '#fff', cursor: 'pointer', fontSize: 14, fontWeight: 700 }}
+              style={{
+                marginTop: 10, padding: '9px 20px', borderRadius: 8,
+                border: 'none', background: 'var(--accent)', color: '#fff',
+                cursor: 'pointer', fontSize: 13, fontWeight: 600, fontFamily: 'inherit',
+              }}
             >
-              🚀 Generar presentación
+              Generar presentación →
             </button>
           ))
         } catch {
@@ -349,11 +422,11 @@ export default function NewProject() {
         addMsg('assistant', assistantText)
       }
     } catch (err) {
-      addMsg('assistant', `❌ Error: ${err.message}`)
+      addMsg('assistant', `Error: ${err.message}`)
     } finally {
       setLoading(false)
     }
-  }, [input, loading, selectedModel, keys])
+  }, [input, loading, selectedModel])
 
   // ── Iniciar generación ─────────────────────────────────────────────────────
   const startGeneration = (genData) => {
@@ -363,17 +436,12 @@ export default function NewProject() {
     setGenPlan([])
     setSlidesStatus({})
     setGenStatus('Iniciando...')
-    setCurrentPreviewUrl(null)
     setGeneratedSlides([])
     setPhase('generating')
 
-    const keyMap = { openai: keys.openai, claude: keys.anthropic, gemini: keys.gemini }
-    const apiKey = keyMap[selectedModel]
-
-    // Agregar mensaje de inicio con progress
     setMessages(prev => [...prev, {
       role: 'assistant',
-      content: '🚀 Iniciando generación...',
+      content: 'Generando tu presentación...',
       _isProgress: true
     }])
 
@@ -385,8 +453,6 @@ export default function NewProject() {
       slideCount: Math.min(parseInt(genData.slideCount) || 5, 20),
       theme: genData.theme || 'dark-tech',
       extraInstructions: genData.extraInstructions || '',
-      apiKey,
-      geminiApiKey: keys.gemini || null,
     }, {
       onStatus: (p) => setGenStatus(p.message),
       onPlan: (p) => {
@@ -402,10 +468,8 @@ export default function NewProject() {
       },
       onSlide: (p) => {
         setSlidesStatus(prev => ({ ...prev, [p.slideIndex]: 'done' }))
-        // Esperar 300ms para que el archivo esté listo en disco
         const url = `/slides/${slug}/${p.filename}?t=${Date.now()}`
         setTimeout(() => {
-          setCurrentPreviewUrl(url)
           setGeneratedSlides(prev => {
             const next = [...prev]
             next[p.slideIndex - 1] = url
@@ -417,7 +481,10 @@ export default function NewProject() {
         setIsGenerating(false)
         setMessages(prev => {
           const filtered = prev.filter(m => !m._isProgress)
-          return [...filtered, { role: 'assistant', content: `✅ ¡Listo! Se generaron ${p.slides?.length || 0} slides. Redirigiendo al visor...` }]
+          return [...filtered, {
+            role: 'assistant',
+            content: `Listo. Se generaron ${p.slides?.length || 0} slides. Redirigiendo al visor...`
+          }]
         })
         setTimeout(() => navigate(`/viewer/${slug}`), 1500)
       },
@@ -425,8 +492,8 @@ export default function NewProject() {
         setIsGenerating(false)
         setPhase('chat')
         const msg = p.message?.includes('already exists')
-          ? `❌ Ya existe un proyecto con ese nombre. Dime un nombre diferente.`
-          : `❌ Error: ${p.message}`
+          ? `Ya existe un proyecto con ese nombre. Dime un nombre diferente.`
+          : `Error: ${p.message}`
         setMessages(prev => {
           const filtered = prev.filter(m => !m._isProgress)
           return [...filtered, { role: 'assistant', content: msg }]
@@ -435,28 +502,61 @@ export default function NewProject() {
     })
   }
 
-  // ── Render ─────────────────────────────────────────────────────────────────
   const showInput = phase === 'chat' && !isGenerating
-  const showKeyInput = phase === 'key'
   const showModelSelector = phase === 'model'
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#080808', fontFamily: "'Inter','Segoe UI',sans-serif" }}>
+    <div style={{
+      display: 'flex', flexDirection: 'column', height: '100vh',
+      background: isGenerating ? 'var(--canvas-bg)' : 'var(--bg)',
+      fontFamily: "'Montserrat', sans-serif",
+    }}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 20px', borderBottom: '1px solid #1a1a1a', flexShrink: 0 }}>
-        <button onClick={() => navigate('/')} style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid #222', background: '#111', color: '#888', cursor: 'pointer', fontSize: 13 }}>
+      <div style={{
+        display: 'flex', alignItems: 'center', gap: 12,
+        padding: '0 20px', height: 56,
+        borderBottom: `1px solid ${isGenerating ? 'rgba(255,255,255,0.06)' : 'var(--border)'}`,
+        background: isGenerating ? 'rgba(0,0,0,0.4)' : 'var(--surface)',
+        flexShrink: 0,
+      }}>
+        <button
+          onClick={() => navigate('/')}
+          style={{
+            padding: '6px 12px', borderRadius: 7,
+            border: `1px solid ${isGenerating ? 'rgba(255,255,255,0.1)' : 'var(--border)'}`,
+            background: 'transparent',
+            color: isGenerating ? 'rgba(255,255,255,0.5)' : 'var(--text2)',
+            cursor: 'pointer', fontSize: 12, fontWeight: 600, fontFamily: 'inherit',
+          }}
+        >
           ← Volver
         </button>
-        <h2 style={{ color: '#f0f0f0', fontSize: 16, fontWeight: 600, margin: 0 }}>Nueva Presentación</h2>
+        <span style={{
+          fontSize: 14, fontWeight: 600,
+          color: isGenerating ? 'rgba(255,255,255,0.7)' : 'var(--text)',
+        }}>
+          Nueva Presentación
+        </span>
         {selectedModel && (
-          <span style={{ marginLeft: 4, fontSize: 12, color: '#333', background: '#111', padding: '3px 10px', borderRadius: 20, border: '1px solid #1e1e1e' }}>
-            {selectedModel === 'openai' ? '🤖 GPT-4o' : selectedModel === 'claude' ? '🧠 Claude' : '✨ Gemini'}
+          <span style={{
+            fontSize: 11, fontWeight: 600,
+            color: isGenerating ? 'rgba(255,255,255,0.3)' : 'var(--text3)',
+            background: isGenerating ? 'rgba(255,255,255,0.05)' : 'var(--surface2)',
+            padding: '3px 9px', borderRadius: 20,
+            border: `1px solid ${isGenerating ? 'rgba(255,255,255,0.08)' : 'var(--border)'}`,
+          }}>
+            {selectedModel === 'openai' ? 'GPT-4o' : selectedModel === 'claude' ? 'Claude' : 'Gemini'}
           </span>
         )}
         {isGenerating && (
-          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 8 }}>
-            <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#4CAF50', animation: 'pulse 1.5s infinite' }} />
-            <span style={{ color: '#4CAF50', fontSize: 12, fontWeight: 600 }}>Generando con IA...</span>
+          <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 7 }}>
+            <div style={{
+              width: 7, height: 7, borderRadius: '50%',
+              background: 'var(--accent)', animation: 'pulse 1.5s infinite',
+            }} />
+            <span style={{ color: 'var(--accent)', fontSize: 12, fontWeight: 600 }}>
+              Generando con IA...
+            </span>
           </div>
         )}
       </div>
@@ -465,19 +565,20 @@ export default function NewProject() {
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
         {/* Panel chat */}
         <div style={{
-          width: isGenerating ? '38%' : '100%',
+          width: isGenerating ? '36%' : '100%',
           display: 'flex', flexDirection: 'column',
-          borderRight: isGenerating ? '1px solid #1a1a1a' : 'none',
+          borderRight: isGenerating ? '1px solid rgba(255,255,255,0.06)' : 'none',
           transition: 'width 0.35s ease',
-          minWidth: isGenerating ? 300 : 'auto',
+          minWidth: isGenerating ? 280 : 'auto',
+          background: isGenerating ? 'rgba(0,0,0,0.25)' : 'var(--bg)',
         }}>
           {/* Mensajes */}
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px' }}>
-            <div style={{ maxWidth: isGenerating ? '100%' : 700, margin: '0 auto' }}>
+          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 20px' }}>
+            <div style={{ maxWidth: isGenerating ? '100%' : 600, margin: '0 auto' }}>
               {messages.map((msg, i) => {
                 if (msg._isProgress) {
                   return (
-                    <div key={i} style={{ marginLeft: isGenerating ? 0 : 42, marginBottom: 16 }}>
+                    <div key={i} style={{ marginLeft: isGenerating ? 0 : 38, marginBottom: 16 }}>
                       <GenerationProgress plan={genPlan} slidesStatus={slidesStatus} statusMessage={genStatus} />
                     </div>
                   )
@@ -486,14 +587,22 @@ export default function NewProject() {
               })}
 
               {showModelSelector && (
-                <div style={{ marginLeft: isGenerating ? 0 : 42, marginTop: 4 }}>
+                <div style={{ marginLeft: isGenerating ? 0 : 38, marginTop: 4 }}>
                   <ModelSelector onSelect={handleModelSelect} selected={selectedModel} />
                 </div>
               )}
 
               {loading && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 42, color: '#333', fontSize: 13 }}>
-                  <div style={{ width: 14, height: 14, border: '2px solid #222', borderTop: '2px solid #4CAF50', borderRadius: '50%', animation: 'spin 0.8s linear infinite' }} />
+                <div style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  marginLeft: 38, color: 'var(--text3)', fontSize: 13,
+                }}>
+                  <div style={{
+                    width: 14, height: 14,
+                    border: '2px solid var(--border)',
+                    borderTop: '2px solid var(--accent)',
+                    borderRadius: '50%', animation: 'spin 0.8s linear infinite',
+                  }} />
                   Pensando...
                 </div>
               )}
@@ -502,22 +611,39 @@ export default function NewProject() {
           </div>
 
           {/* Input */}
-          {(showInput || showKeyInput) && (
-            <div style={{ padding: '14px 20px', borderTop: '1px solid #1a1a1a', background: '#0a0a0a', flexShrink: 0 }}>
-              <div style={{ maxWidth: isGenerating ? '100%' : 700, margin: '0 auto', display: 'flex', gap: 10 }}>
+          {showInput && (
+            <div style={{
+              padding: '12px 20px',
+              borderTop: `1px solid ${isGenerating ? 'rgba(255,255,255,0.06)' : 'var(--border)'}`,
+              background: isGenerating ? 'rgba(0,0,0,0.3)' : 'var(--surface)',
+              flexShrink: 0,
+            }}>
+              <div style={{ maxWidth: isGenerating ? '100%' : 600, margin: '0 auto', display: 'flex', gap: 8 }}>
                 <input
                   autoFocus
-                  type={showKeyInput ? 'password' : 'text'}
-                  placeholder={showKeyInput ? 'Pega tu API key...' : 'Escribe tu mensaje...'}
-                  value={showKeyInput ? keyDraft : input}
-                  onChange={e => showKeyInput ? setKeyDraft(e.target.value) : setInput(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); showKeyInput ? handleKeySave() : handleSend() } }}
-                  style={{ flex: 1, padding: '12px 16px', borderRadius: 10, border: '1px solid #2a2a2a', background: '#111', color: '#ddd', fontSize: 14, outline: 'none' }}
+                  type="text"
+                  placeholder="Escribe tu mensaje..."
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+                  style={{
+                    flex: 1, padding: '10px 14px', borderRadius: 8,
+                    border: `1px solid ${isGenerating ? 'rgba(255,255,255,0.1)' : 'var(--border)'}`,
+                    background: isGenerating ? 'rgba(255,255,255,0.05)' : 'var(--surface2)',
+                    color: isGenerating ? 'rgba(255,255,255,0.8)' : 'var(--text)',
+                    fontSize: 13, outline: 'none', fontFamily: 'inherit', fontWeight: 400,
+                  }}
                 />
                 <button
-                  onClick={showKeyInput ? handleKeySave : handleSend}
+                  onClick={handleSend}
                   disabled={loading}
-                  style={{ padding: '12px 20px', borderRadius: 10, border: 'none', background: 'linear-gradient(135deg,#1B5E20,#4CAF50)', color: '#fff', cursor: loading ? 'default' : 'pointer', fontSize: 14, fontWeight: 700, opacity: loading ? 0.5 : 1 }}
+                  style={{
+                    padding: '10px 18px', borderRadius: 8,
+                    border: 'none', background: 'var(--accent)',
+                    color: '#fff', cursor: loading ? 'default' : 'pointer',
+                    fontSize: 13, fontWeight: 600, opacity: loading ? 0.5 : 1,
+                    fontFamily: 'inherit',
+                  }}
                 >
                   →
                 </button>

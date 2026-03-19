@@ -5,19 +5,10 @@ export const useSettingsStore = create(
   persist(
     (set, get) => ({
       model: null,
-      keys: { openai: null, anthropic: null, gemini: null },
+      theme: 'light',
       setModel: (model) => set({ model }),
-      setKey: (provider, key) => set((s) => ({ keys: { ...s.keys, [provider]: key } })),
-      getActiveKey: () => {
-        const { model, keys } = get()
-        if (!model) return null
-        const map = { openai: keys.openai, claude: keys.anthropic, gemini: keys.gemini }
-        return map[model] || null
-      },
-      hasKey: (provider) => {
-        const map = { openai: 'openai', claude: 'anthropic', gemini: 'gemini' }
-        return !!get().keys[map[provider]]
-      }
+      setTheme: (theme) => set({ theme }),
+      toggleTheme: () => set((s) => ({ theme: s.theme === 'light' ? 'dark' : 'light' })),
     }),
     { name: 'openslide-settings' }
   )
