@@ -11,6 +11,7 @@ import settingsRouter from './routes/settings.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const app = express()
+app.set('trust proxy', 1)
 
 // ── Configuración desde entorno o config/settings.json ────────────────────────
 const CONFIG_PATH = path.resolve(__dirname, '../config/settings.json')
